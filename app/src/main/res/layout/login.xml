@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.samsung.ttmintro.MainActivity">
+
+    <!-- 타이틀 -->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:background="#74bfc8"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.1"
+            android:gravity="center"
+            android:textColor="#ffffff"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:text="로그인" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#ecf0f1">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:paddingLeft="15.5dp"
+            android:paddingRight="15.5dp"
+            android:paddingTop="8dp">
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/img_contentsbg"
+                android:padding="3dp" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingLeft="14dp"
+                    android:paddingRight="14dp"
+                    android:background="@drawable/pattern_bg">
+
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="23dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="30dp"
+                            android:text="subtitle text"
+                            android:textColor="#596b79"
+                            android:textSize="18.5sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+
+                    <TextView
+                        android:id="@+id/tv_login_noti_message_2"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="21.5dp"
+                        android:text="sample text"
+                        android:textColor="#7b828b"
+                        android:textSize="13sp" />
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="25.5dp"
+                        android:layout_marginTop="15dp"
+                        android:orientation="horizontal" >
+
+
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.1"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:id="@+id/tv_login_noti_message_3"
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:text="sample text"
+                                android:textColor="#7b828b"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/tv_login_noti_message_4"
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="15dp"
+                                android:gravity="center_vertical"
+                                android:text="sample text"
+                                android:textColor="#7b828b"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 아이디,비번 -->
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
+                android:orientation="vertical"
+                android:background="@drawable/img_contentsbg">
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="27.5dp"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="73.5dp"
+                        android:layout_height="fill_parent"
+                        android:gravity="center_vertical"
+                        android:textSize="11sp"
+                        android:textColor="#7b828b"
+                        android:text="아이디"/>
+
+                    <EditText
+                        android:id="@+id/et_login_id"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:imeOptions="actionNext"
+                        android:singleLine="true"
+                        android:textSize="12sp"
+                        android:textColor="#373737"
+                        android:background="@drawable/backwithborder"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="27.5dp"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="73.5dp"
+                        android:layout_height="fill_parent"
+                        android:gravity="center_vertical"
+                        android:textSize="11sp"
+                        android:textColor="#7b828b"
+                        android:text="비밀번호"/>
+
+                    <EditText
+                        android:id="@+id/et_login_pw"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:imeOptions="actionDone"
+                        android:password="true"
+                        android:singleLine="true"
+                        android:textSize="12sp"
+                        android:textColor="#373737"
+                        android:background="@drawable/backwithborder"/>
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btn_login"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:textSize="15sp"
+                    android:textColor="#ffffff"
+                    android:text="로그인"
+                    android:background="@drawable/btn_blue_selector"
+                    android:onClick="mOnClick"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_login_join"
+                    android:layout_width="0dp"
+                    android:layout_height="51dp"
+                    android:layout_weight="1"
+                    android:textSize="14sp"
+                    android:textColor="#ffffff"
+                    android:text="회원가입"
+                    android:background="@drawable/btn_gray_selector"
+                    android:onClick="mOnClick"/>
+
+                <Button
+                    android:id="@+id/btn_login_id_find"
+                    android:layout_width="0dp"
+                    android:layout_height="51dp"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:textSize="14sp"
+                    android:textColor="#ffffff"
+                    android:text="아이디찾기"
+                    android:background="@drawable/btn_gray_selector"
+                    android:onClick="mOnClick"/>
+
+                <Button
+                    android:id="@+id/btn_login_pw_find"
+                    android:layout_width="0dp"
+                    android:layout_height="51dp"
+                    android:layout_weight="1"
+                    android:textSize="14sp"
+                    android:textColor="#ffffff"
+                    android:text="비밀번호찾기"
+                    android:background="@drawable/btn_gray_selector"
+                    android:onClick="mOnClick"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

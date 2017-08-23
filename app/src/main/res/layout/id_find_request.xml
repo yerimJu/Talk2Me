@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <!-- 타이틀 -->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:background="#74bfc8"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.1"
+            android:gravity="center"
+            android:textColor="#ffffff"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:text="아이디 찾기" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#ecf0f1"
+        android:orientation="vertical"
+        android:paddingBottom="8dp"
+        android:paddingLeft="15.5dp"
+        android:paddingRight="15.5dp"
+        android:paddingTop="8dp" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:paddingLeft="17dp"
+            android:paddingRight="17dp"
+            android:orientation="vertical"
+            android:background="@drawable/img_contentsbg">
+
+            <!-- 이름 -->
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="27.5dp"
+                android:layout_marginTop="19.5dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="73.5dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="#7b828b"
+                    android:textSize="11sp"
+                    android:text="이름" />
+
+                <EditText
+                    android:id="@+id/et_id_find_request_name"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="0.1"
+                    android:paddingLeft="5dp"
+                    android:background="@drawable/backwithborder"
+                    android:gravity="center_vertical"
+                    android:imeOptions="actionNext"
+                    android:singleLine="true"
+                    android:textColor="#373737"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <!-- 휴대전화 -->
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="27.5dp"
+                android:layout_marginTop="5dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="73.5dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="#7b828b"
+                    android:textSize="11sp"
+                    android:text="휴대전화" />
+
+                <EditText
+                    android:id="@+id/et_id_find_request_email"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="0.1"
+                    android:paddingLeft="5dp"
+                    android:background="@drawable/backwithborder"
+                    android:gravity="center_vertical"
+                    android:imeOptions="actionDone"
+                    android:inputType="number"
+                    android:singleLine="true"
+                    android:textColor="#373737"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="#d3dce5"/>
+
+            <!-- 다음 -->
+            <Button
+                android:id="@+id/btn_id_find_request_ok"
+                android:layout_width="fill_parent"
+                android:layout_height="41dp"
+                android:background="@drawable/btn_blue_selector"
+                android:gravity="center"
+                android:text="아이디 찾기"
+                android:textColor="#ffffff"
+                android:textSize="15sp"
+                android:onClick="mOnClick"/>
+
+            <!-- 가입시 등록한 이름과... Hint -->
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="20dp"
+                android:gravity="center_vertical"
+                android:text="sample text"
+                android:textColor="#7b828b"
+                android:textSize="10sp"
+                android:background="@drawable/img_infobg"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
