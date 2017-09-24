@@ -14,7 +14,8 @@
         android:paddingTop="10dp"
         android:text="시간 여행 설정"
         android:textSize="25dp"
-        android:textColor="#FFFFFF" />
+        android:textColor="#4D4D4D"
+        android:textStyle="bold" />
 
     <DatePicker
         android:layout_width="wrap_content"

@@ -103,7 +103,6 @@ public class SettingActivity extends AppCompatActivity {
             case R.id.btn_snsconect:
                 Intent intent = new Intent(SettingActivity.this, LoginActivity.class);
                 startActivity(intent);
-                finish();
                 break;
 
             case R.id.btn_keyword:

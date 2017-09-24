@@ -14,7 +14,8 @@
         android:paddingTop="10dp"
         android:textSize="25dp"
         android:text="우선순위 그룹 설정"
-        android:textColor="#FFFFFF" />
+        android:textColor="#4D4D4D"
+        android:textStyle="bold" />
 
 
     <TextView

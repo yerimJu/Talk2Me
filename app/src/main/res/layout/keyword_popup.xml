@@ -14,14 +14,18 @@
         android:paddingTop="10dp"
         android:text="키워드 설정"
         android:textSize="25dp"
-        android:textColor="#FFFFFF" />
+        android:textColor="#4D4D4D"
+        android:textStyle="bold" />
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/edit_keyword"
+        android:background="@drawable/white_rouned"
         android:layout_marginTop="50dp"
-        android:layout_marginBottom="20dp"/>
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp" />
 
     <TextView
         android:layout_width="match_parent"

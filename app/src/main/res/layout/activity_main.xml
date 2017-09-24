@@ -7,14 +7,9 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.hanium.talktome.MainActivity">
-
-    <TabHost
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@android:id/tabhost"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true">
+    tools:context="com.example.hanium.talktome.MainActivity"
+    tools:showIn="@layout/activity_main"
+    android:background="#EEEEEE">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -66,14 +61,18 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/expandableListView3" />
                 </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/tab4"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <ExpandableListView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/expandableListView4" />
+                </LinearLayout>
             </FrameLayout>
         </LinearLayout>
-    </TabHost>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="설정"
-        android:id="@+id/btn_setting"
-        android:onClick="Btn_Setting"
-        android:layout_marginTop="400dp"/>
 </RelativeLayout>

@@ -23,19 +23,13 @@
             android:id="@+id/fb_login_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-        <!--Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="   FACEBOOK   "
-            android:layout_marginRight="15dp"/-->
+            android:layout_gravity="center"
+            android:textSize="16dp"/>
 
-        <com.example.hanium.talktome.widgets.InstagramLoginButton
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="INSTARGRAM"
-            android:id="@+id/btn_insta"
-            android:onClick="click_insta"/>
+            android:text="         RSS        "/>
 
     </LinearLayout>
 
@@ -49,12 +43,12 @@
         <com.twitter.sdk.android.core.identity.TwitterLoginButton
             android:id="@+id/twitter_login_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="30dp"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="        BAND       "/>
+            android:text="       Gmail     "/>
 
     </LinearLayout>
 </LinearLayout>

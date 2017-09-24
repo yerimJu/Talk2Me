@@ -7,18 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
-import com.example.hanium.talktome.activities.InstagramAuthActivity;
-import com.example.hanium.talktome.engine.InstagramEngine;
-import com.example.hanium.talktome.exceptions.InstagramException;
-import com.example.hanium.talktome.interfaces.InstagramAPIResponseCallback;
-import com.example.hanium.talktome.interfaces.InstagramLoginCallbackListener;
-import com.example.hanium.talktome.objects.IGPagInfo;
-import com.example.hanium.talktome.objects.IGSession;
-import com.example.hanium.talktome.objects.IGUser;
-import com.example.hanium.talktome.utils.InstagramKitLoginScope;
-import com.example.hanium.talktome.widgets.InstagramLoginButton;
-
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -38,23 +26,24 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import io.fabric.sdk.android.Fabric;
+import okhttp3.internal.Util;
 
 /**
  * Created by Jisu on 2017-07-29.
  */
 
 public class LoginActivity extends Activity {
-    //Instagram 변수
-    InstagramLoginButton instagramLoginButton;
-    String[] scopes = {InstagramKitLoginScope.BASIC, InstagramKitLoginScope.COMMENTS, InstagramKitLoginScope.LIKES, InstagramKitLoginScope.RELATIONSHIP, InstagramKitLoginScope.PUBLIC_ACCESS, InstagramKitLoginScope.FOLLOWER_LIST};
-
     // facebook Login 변수
     //private Button FacebookLoginButton;
     private LoginButton FacebookLoginButton2;
     private CallbackManager callbackManager;
+
     // 트위터
     private static final String SEARCH_QUERY = "Almounir";
     private static final String SEARCH_RESULT_TYPE = "recent";
@@ -65,7 +54,7 @@ public class LoginActivity extends Activity {
     private static final String TWITTER_KEY = " 01wqQAQBbxpj0ALkh6mZjb48k";
     private static final String TWITTER_SECRET = " ZN9GDK5x5GJrlfkeNPdCPTrUAw2vSoKoxHgrEtu21NmvxKSmsq";
 
-    private TwitterLoginButton loginButton = null;
+    private TwitterLoginButton loginButton;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,14 +63,6 @@ public class LoginActivity extends Activity {
         AppEventsLogger.activateApp(this);
 
         setContentView(R.layout.activity_login);
-
-        // instagram Login
-        instagramLoginButton = (InstagramLoginButton) findViewById(R.id.btn_insta);
-        instagramLoginButton.setInstagramLoginCallback(instagramLoginCallbackListener);
-        instagramLoginButton.setScopes(scopes);
-
-        instagramLoginButton = (InstagramLoginButton) findViewById(R.id.btn_insta);
-        instagramLoginButton.setScopes(scopes);
 
         // facebook Login
         callbackManager = CallbackManager.Factory.create();
@@ -150,7 +131,6 @@ public class LoginActivity extends Activity {
         });
 
         // 트위터
-
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
 
@@ -182,7 +162,6 @@ public class LoginActivity extends Activity {
 
         });
         // 로그인 화면
-
     }
 
     @Override
@@ -193,53 +172,5 @@ public class LoginActivity extends Activity {
         loginButton.onActivityResult(requestCode, resultCode, data);
     }
 
-    InstagramLoginCallbackListener instagramLoginCallbackListener = new InstagramLoginCallbackListener() {
-        @Override
-        public void onSuccess(IGSession session) {
 
-            Toast.makeText(LoginActivity.this, "Wow!!! User trusts you :) " + session.getAccessToken(),
-                    Toast.LENGTH_LONG).show();
-            InstagramEngine.getInstance(LoginActivity.this).getUserDetails(instagramUserResponseCallback);
-
-        }
-
-        @Override
-        public void onCancel() {
-            Toast.makeText(LoginActivity.this, "Oh Crap!!! Canceled.",
-                    Toast.LENGTH_LONG).show();
-
-        }
-
-        @Override
-        public void onError(InstagramException error) {
-            Toast.makeText(LoginActivity.this, "User does not trust you :(\n " + error.getMessage(),
-                    Toast.LENGTH_LONG).show();
-
-        }
-    };
-    InstagramAPIResponseCallback<IGUser> instagramUserResponseCallback = new InstagramAPIResponseCallback<IGUser>() {
-        @Override
-        public void onResponse(IGUser responseObject, IGPagInfo pageInfo) {
-            Log.v("SampleActivity", "User:" + responseObject.getUsername() + ", User Id: " + responseObject.getId());
-
-            Toast.makeText(LoginActivity.this, "Username: " + responseObject.getUsername(),
-                    Toast.LENGTH_LONG).show();
-        }
-
-        @Override
-        public void onFailure(InstagramException exception) {
-            Log.v("SampleActivity", "Exception:" + exception.getMessage());
-        }
-    };
-
-    public void click_insta(View view){
-        //Implement via InstagramLoginButton
-        Intent intent = new Intent(LoginActivity.this, InstagramAuthActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        intent.putExtra(InstagramEngine.TYPE, InstagramEngine.TYPE_LOGIN);
-        intent.putExtra(InstagramEngine.SCOPE, scopes);
-
-        startActivityForResult(intent, InstagramEngine.REQUEST_CODE_LOGIN);
-    }
 }
