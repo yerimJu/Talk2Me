@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Talk2Me.iml" filepath="$PROJECT_DIR$/Talk2Me.iml" />
       <module fileurl="file://$PROJECT_DIR$/TalkToMe-master.iml" filepath="$PROJECT_DIR$/TalkToMe-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
