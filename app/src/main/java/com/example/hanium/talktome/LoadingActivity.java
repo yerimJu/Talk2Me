@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -37,6 +38,7 @@ public class LoadingActivity extends Activity {
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    Toast.makeText(LoadingActivity.this, user.getEmail()+"로 로그인되었습니다.", Toast.LENGTH_SHORT).show();
                     intent2 = new Intent(LoadingActivity.this, MainActivity.class);
                 } else {
                     // User is signed out
