@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,15 +17,41 @@ import android.widget.ExpandableListView;
 import android.widget.TabHost;
 import android.widget.Toast;
 
+import com.example.hanium.talktome.models.Notification;
+import com.example.hanium.talktome.models.User;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity{
 
-    // extendableListView에 관한 변수들
+    private static final String TAG = "MainActivity";
 
+    // for firebase database
+    //public static final String EXTRA_NOTIFICATION_KEY = "notification_key";
+    private DatabaseReference mDatabase;
+    private FirebaseAuth mAuth;
+    private FirebaseUser mUser;
+    //private String mNotificationKey;
+    private DatabaseReference mNotificationReference;
+    private DatabaseReference mUserReference;
+    //private ValueEventListener mNotificationListener;
+
+    // extendableListView에 관한 변수들
     private ExpandableListView expandableListView;
     private CustomExpandableListViewAdapter mCustomListViewAdapter;
     private ArrayList<String> parentList;
@@ -71,10 +98,87 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /* start firebase */
+        /*// Get noti key from intent
+        mNotificationKey = getIntent().getStringExtra(EXTRA_NOTIFICATION_KEY);
+        if (mNotificationKey == null) {
+            throw new IllegalArgumentException("Must pass EXTRA_NOTIFICATION_KEY");
+        }*/
+
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mUser = mAuth.getCurrentUser();
+        final String userId = mUser.getUid();
+        mNotificationReference = mDatabase.child("notifications").child(userId);
+        //mNotificationReference = mDatabase.child("notifications").child(userId).child(mNotificationKey);
+
+        // intent에 값 넘겨줄 때 사용하는 리스너
+        /*ValueEventListener notificationListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Notification noti = dataSnapshot.getValue(Notification.class);
+                Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
+                Log.d(TAG, "I got a notification :)\n"+noti.toString());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                Toast.makeText(MainActivity.this, "Failed to load notification.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        };
+        mNotificationReference.addValueEventListener(notificationListener);
+        mNotificationListener = notificationListener;*/
+
+        // 실시간 DB를 위한 child event listener
+        ChildEventListener notificationListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
+
+                Notification noti = dataSnapshot.getValue(Notification.class);
+                Log.d(TAG, "I got a new notification :)\n"+noti.toString());
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
+                // 사용되지 않을 항목
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
+
+                Notification noti = dataSnapshot.getValue(Notification.class);
+                Log.d(TAG, "This notification was removed :(\n"+noti.toString());
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
+                // 사용되지 않을 항목
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "postComments:onCancelled", databaseError.toException());
+                Toast.makeText(MainActivity.this, "Failed to load notifications.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        };
+        mNotificationReference.addChildEventListener(notificationListener);
+
+        /* end firebase */
+
         ChildListData user1 = new ChildListData(getResources().getDrawable(R.drawable.icon_facebook), "알림1이 도착했습니다.");
         ChildListData user2 = new ChildListData(getResources().getDrawable(R.drawable.icon_gmail), "알림2가 도착했습니다.");
         ChildListData user3 = new ChildListData(getResources().getDrawable(R.drawable.icon_rss), "알림3이 도착했습니다.");
         ChildListData user4 = new ChildListData(getResources().getDrawable(R.drawable.icon_twitter), "알림4이 도착했습니다.");
+
+        ChildListData user11 = new ChildListData(getResources().getDrawable(R.drawable.icon_facebook), "DB에 임의의 notification 추가하기");
+        ChildListData user12 = new ChildListData(getResources().getDrawable(R.drawable.icon_gmail), "현재 user의 정보 불러오기");
 
         alarmsToCheck = new ArrayList<ChildListData>();
         alarmsToCheck.add(user1);
@@ -86,7 +190,8 @@ public class MainActivity extends AppCompatActivity{
         recommandedNews.add(user3);
 
         alarmsNotCheck = new ArrayList<ChildListData>();
-        alarmsNotCheck.add(user4);
+        alarmsNotCheck.add(user11);
+        alarmsNotCheck.add(user12);
 
         // list에 항목 넣기
         parentList = new ArrayList<String>();
@@ -120,8 +225,90 @@ public class MainActivity extends AppCompatActivity{
         expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                if (groupPosition == 2 && childPosition == 0) {
+                    // 전체 개체를 다시 쓰지 않고도 하위 항목을 업데이트 하는 방법
+                    // data 저장할 때 주의 : string이 아닌 자료형은 json으로 저장할 때 오류가 나므로 string 형변환 필요
+
+                    String key = mDatabase.child("notifications").push().getKey();
+                    String userId = mUser.getUid();
+
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("E MMM dd HH:mm:ss", Locale.KOREA);
+                    Notification noti = new Notification(userId, key, "title", "contentsssss", "https://github.com/yerimJu/Talk2Me",simpleDateFormat);
+                    Map<String, Object> notiValues = noti.toMap();
+
+                    Map<String, Object> childUpdates = new HashMap<>();
+                    childUpdates.put("/notifications/" + userId + "/" + key, notiValues);
+
+                    mDatabase.updateChildren(childUpdates);
+                    Log.d(TAG, "noti was saved :)\n"+noti.toString());
+
+                    Toast.makeText(MainActivity.this, "New notification saved in DB",
+                            Toast.LENGTH_SHORT).show();
+                } else if (groupPosition==2 && childPosition==1) {
+                    /*// intent에 key 저장 부분 추가 : postListFragment line 76
+                    final DatabaseReference notiRef = mDatabase.child("notifications").getRef()getRef(position);
+
+                    // Set click listener for the whole post view
+                    final String notiKey = notiRef.getKey();
+                    viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Launch PostDetailActivity
+                            Intent intent = new Intent(getActivity(), PostDetailActivity.class);
+                            intent.putExtra(PostDetailActivity.EXTRA_NOTIFICATION_KEY, notiKey);
+                            startActivity(intent);
+                        }
+                    });*/
+
+                    // user facebookaccesstoken 불러오기
+                    mUserReference = mDatabase.child("users");
+                    Query userQuery = mUserReference;
+                    userQuery.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
+                                // TODO: handle the post
+                                if (userId.equals(userSnapshot.getKey())) {
+                                    User temp = userSnapshot.getValue(User.class);
+                                    Log.d(TAG, "Current user information : "+ temp.toString());
+                                    Toast.makeText(MainActivity.this, "Hi, "+temp.username+"!!",
+                                            Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(MainActivity.this, "Cannot access user information",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            // Getting Post failed, log a message
+                            Log.w(TAG, "loadUser:onCancelled", databaseError.toException());
+                            // ...
+                        }
+                    });
+
+                }
+
                 return false;
+
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // Remove notification value event listener
+        /*if (mNotificationListener != null) {
+            mNotificationReference.removeEventListener(mNotificationListener);
+        }*/
     }
 }
