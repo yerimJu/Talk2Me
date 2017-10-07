@@ -48,14 +48,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="       Gmail     "
-            android:id="@+id/gmail_login_button"
-            android:onClick="gmail_login"/>
-
-        <!--com.google.android.gms.common.SignInButton
-            android:id="@+id/gmail_login_button"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"/-->
+            android:text="       Gmail     "/>
 
     </LinearLayout>
 </LinearLayout>

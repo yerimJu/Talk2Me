@@ -157,15 +157,11 @@ public class SettingActivity extends AppCompatActivity {
 
         else {
             Toast.makeText(getApplicationContext(), "키워드가 " + Str_keyword + "로 설정되었습니다.", Toast.LENGTH_SHORT).show();
-            // 키워드 디비에 저장
-
-            // 설정된 키워드 관련 알림 가져오기
             pwindo.dismiss();
         }
     }
 
     //2. 우선순위 그룹 설정
-    // 친구를 뭐로할지
 
     //3. 시간여행 설정
     public void btn_time_yes(View v){
@@ -174,11 +170,7 @@ public class SettingActivity extends AppCompatActivity {
         Str_day = String.valueOf(datepick.getDayOfMonth());
 
         Toast.makeText(getApplicationContext(), "시간 여행 할 날짜가 " + Str_year+"년 "+Str_month+"월 "+Str_day+"일" + "로 설정되었습니다.", Toast.LENGTH_SHORT).show();
-        // 이전 알림 조회 시간 디비에 저장
-
-        // 설정된 시간의 알림 가져오기
         pwindo.dismiss();
-
     }
 
     //4. 방해금지 모드 설정
@@ -187,9 +179,6 @@ public class SettingActivity extends AppCompatActivity {
         Str_minute = String.valueOf(timepick.getCurrentMinute());
 
         Toast.makeText(getApplicationContext(), "방해금지 시간이 현재부터 " + Str_hour+":"+Str_minute+" 까지로 설정되었습니다.", Toast.LENGTH_SHORT).show();
-        // 방해 금지 시간 디비에 저장
-
-        // 설정된 시간의 알림 막기
         pwindo.dismiss();
     }
 }

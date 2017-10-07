@@ -1,12 +1,5 @@
 <resources>
     <string name="app_name">TalkToMe</string>
-    <!--string name="facebook_app_id">350602848707792</string>
-    <string name="fb_login_protocol_scheme">fb350602848707792</string-->
-    <!--string name="facebook_app_id">238829726646010</string-->
-    <string name="facebook_app_key">c79a4b220896c1d784cecdd92cd8f229</string>
+    <string name="facebook_app_id">350602848707792</string>
     <string name="fb_login_protocol_scheme">fb350602848707792</string>
-    <string name="facebook_app_id">1415774871877416</string>
-    <string name="loading">loading</string>
-    <!--string name="facebook_app_key">06bac5f8a930e4dd51dbe074e517d03ae49f42bb</string>
-    <string name="fb_login_protocol_scheme">fb350602848707792</string-->
 </resources>
