@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity{
                                 if (userId.equals(userSnapshot.getKey())) {
                                     User temp = userSnapshot.getValue(User.class);
                                     Log.d(TAG, "Current user information : "+ temp.toString());
-                                    Toast.makeText(MainActivity.this, "Hi, "+temp.username+"!!",
+                                    Toast.makeText(MainActivity.this, "Hi, "+temp.getFacebookAccesstoken()+"!!",
                                             Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(MainActivity.this, "Cannot access user information",
