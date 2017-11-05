@@ -15,6 +15,10 @@ import com.facebook.GraphResponse;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -31,6 +35,10 @@ import io.fabric.sdk.android.Fabric;
  */
 
 public class LoginActivity extends Activity {
+    // for firebase database
+    private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
+
     /*implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {*/
     String TAG = "LoginActivity";
     // facebook Login 변수
@@ -56,6 +64,9 @@ public class LoginActivity extends Activity {
 
         setContentView(R.layout.activity_login);
 
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
         // facebook Login
         callbackManager = CallbackManager.Factory.create();
         FacebookLoginButton2 = (LoginButton) findViewById(R.id.fb_login_button);
@@ -65,11 +76,17 @@ public class LoginActivity extends Activity {
         FacebookLoginButton2.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Toast.makeText(LoginActivity.this,"로그인 성공 " + loginResult.getAccessToken().getToken(),Toast.LENGTH_SHORT).show();
+                String fbtoken = loginResult.getAccessToken().getToken();
+                Toast.makeText(LoginActivity.this,"로그인 성공 " + fbtoken, Toast.LENGTH_SHORT).show();
 
-                Log.e("토큰",loginResult.getAccessToken().getToken());
-                Log.e("유저아이디",loginResult.getAccessToken().getUserId());
-                Log.e("퍼미션 리스트",loginResult.getAccessToken().getPermissions()+"");
+                Log.d(TAG, "토큰 : "+fbtoken);
+                Log.d(TAG, "유저아이디"+loginResult.getAccessToken().getUserId());
+                Log.d(TAG, "퍼미션 리스트"+loginResult.getAccessToken().getPermissions()+"");
+
+                FirebaseUser user = mAuth.getCurrentUser();
+                String userId = user.getUid();
+                mDatabase.child("users").child(userId).child("facebookAccessotken").setValue(fbtoken);
+                Log.d(TAG, "Facebook Accesstoken saved successfully !");
 
                 //loginResult.getAccessToken() 정보를 가지고 유저 정보를 가져올수 있습니다.
                 GraphRequest request =GraphRequest.newMeRequest(loginResult.getAccessToken() ,

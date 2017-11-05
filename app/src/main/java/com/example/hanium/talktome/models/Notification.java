@@ -73,4 +73,8 @@ public class Notification {
                 ", date=" + date +
                 '}';
     }
+
+    public String getContents() {
+        return date+"\n"+title+"\n"+content+"\n"+url;
+    }
 }

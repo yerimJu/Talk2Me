@@ -16,11 +16,9 @@ public class User {
     public String username;
     public String email;
 
-    private String facebookAccesstoken = "NULL";
-    private String twitterAccesstoken = "NULL";
-    private String gmailAccesstoken = "NULL";
-
-    public Setting setting;
+    private String facebookAccesstoken;
+    private String twitterAccesstoken;
+    private String gmailAccesstoken;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
@@ -29,6 +27,12 @@ public class User {
     public User(String username, String email) {
         this.username = username;
         this.email = email;
+    }
+
+    public User(String username, String email, String fbacstkn) {
+        this.username = username;
+        this.email = email;
+        this.facebookAccesstoken = fbacstkn;
     }
 
     public void setFacebookAccesstoken(String acstoken) { this.facebookAccesstoken = acstoken; }
@@ -58,11 +62,11 @@ public class User {
         HashMap<String, Object> result = new HashMap<>();
         result.put("username", this.username);
         result.put("email", this.email);
-        if (this.facebookAccesstoken.equals("NULL"))
+        if (this.facebookAccesstoken != null)
             result.put("facebookAccesstoken",this.facebookAccesstoken);
-        if (this.twitterAccesstoken.equals("NULL"))
+        if (this.twitterAccesstoken != null)
             result.put("twitterAccesstoken",this.twitterAccesstoken);
-        if (this.gmailAccesstoken.equals("NULL"))
+        if (this.gmailAccesstoken != null)
             result.put("gmailAccesstoken",this.gmailAccesstoken);
 
         return result;

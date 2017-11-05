@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity{
     private ArrayList<ChildListData> alarmsToCheck;
     private ArrayList<ChildListData> recommandedNews;
     private ArrayList<ChildListData> alarmsNotCheck;
+    private ArrayList<ChildListData> testArray;
     private HashMap<String, ArrayList<ChildListData>> childList; // parent-child 연결할 hashmap 변수
 
 
@@ -110,6 +111,7 @@ public class MainActivity extends AppCompatActivity{
         mUser = mAuth.getCurrentUser();
         final String userId = mUser.getUid();
         mNotificationReference = mDatabase.child("notifications").child(userId);
+
         //mNotificationReference = mDatabase.child("notifications").child(userId).child(mNotificationKey);
 
         // intent에 값 넘겨줄 때 사용하는 리스너
@@ -131,6 +133,8 @@ public class MainActivity extends AppCompatActivity{
         mNotificationReference.addValueEventListener(notificationListener);
         mNotificationListener = notificationListener;*/
 
+        // DB 정보가 담긴 array
+        testArray = new ArrayList<ChildListData>();
         // 실시간 DB를 위한 child event listener
         ChildEventListener notificationListener = new ChildEventListener() {
             @Override
@@ -139,6 +143,7 @@ public class MainActivity extends AppCompatActivity{
 
                 Notification noti = dataSnapshot.getValue(Notification.class);
                 Log.d(TAG, "I got a new notification :)\n"+noti.toString());
+                testArray.add(new ChildListData(null, noti.getContents()));
             }
 
             @Override
@@ -178,7 +183,7 @@ public class MainActivity extends AppCompatActivity{
         ChildListData user4 = new ChildListData(getResources().getDrawable(R.drawable.icon_twitter), "알림4이 도착했습니다.");
 
         ChildListData user11 = new ChildListData(getResources().getDrawable(R.drawable.icon_facebook), "DB에 임의의 notification 추가하기");
-        ChildListData user12 = new ChildListData(getResources().getDrawable(R.drawable.icon_gmail), "현재 user의 정보 불러오기");
+        ChildListData user12 = new ChildListData(getResources().getDrawable(R.drawable.icon_gmail), "현재 user의 facebook 정보 불러오기");
 
         alarmsToCheck = new ArrayList<ChildListData>();
         alarmsToCheck.add(user1);
@@ -197,13 +202,15 @@ public class MainActivity extends AppCompatActivity{
         parentList = new ArrayList<String>();
         parentList.add("    확인 할 알림 ("+alarmsToCheck.size()+")");
         parentList.add("    추천 뉴스피드 ("+recommandedNews.size()+")");
-        parentList.add("    선호하지 않는 알림함 ("+alarmsNotCheck.size()+")");
+        parentList.add("    테스트 전용 탭1 ("+alarmsNotCheck.size()+")");
+        parentList.add("    테스트 전용 탭2 ("+testArray.size()+")");
 
         // parent와 child를 hashmap으로 연결
         childList = new HashMap<String, ArrayList<ChildListData>>();
         childList.put(parentList.get(0), alarmsToCheck);
         childList.put(parentList.get(1), recommandedNews);
         childList.put(parentList.get(2), alarmsNotCheck);
+        childList.put(parentList.get(3), testArray);
 
         // expandablelistview, customadapter 연결 후 OnClickListener 선언
         expandableListView = (ExpandableListView)findViewById(R.id.expandableListView);
