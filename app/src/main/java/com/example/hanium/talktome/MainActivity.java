@@ -1,5 +1,7 @@
 package com.example.hanium.talktome;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -7,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -93,7 +96,30 @@ public class MainActivity extends AppCompatActivity{
         return super.onOptionsItemSelected(item);
     }
 
+    private boolean isProhibit(String time){
+        // 방해금지 시간인지 체크 - true면 방해금지 시간, false면 방해금지 시간 아님(알람 o)
+        return false;
+    }
 
+    private void set_notification(){
+        NotificationManager notificationManager= (NotificationManager)MainActivity.this.getSystemService(MainActivity.this.NOTIFICATION_SERVICE);
+        Intent intent1 = new Intent(MainActivity.this.getApplicationContext(),MainActivity.class); //인텐트 생성.
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
+        intent1.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP| Intent.FLAG_ACTIVITY_CLEAR_TOP);//현재 액티비티를 최상으로 올리고, 최상의 액티비티를 제외한 모든 액티비티를없앤다.
+
+        PendingIntent pendingNotificationIntent = PendingIntent.getActivity( MainActivity.this,0, intent1,PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setSmallIcon(R.drawable.icon_facebook).setTicker("HETT").setWhen(System.currentTimeMillis())
+                .setContentTitle("푸쉬 제목")
+                .setContentText("푸쉬내용")
+                .setDefaults(NotificationCompat.DEFAULT_SOUND | NotificationCompat.DEFAULT_VIBRATE)
+                .setContentIntent(pendingNotificationIntent)
+                .setAutoCancel(true)
+                .setOngoing(true);
+        //해당 부분은 API 4.1버전부터 작동합니다.
+
+        notificationManager.notify(1, builder.build()); // Notification send
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,6 +165,10 @@ public class MainActivity extends AppCompatActivity{
         ChildEventListener notificationListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                // 푸시알람이 오게 해야함
+                if(!isProhibit("S"))
+                    set_notification();
+
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
 
                 Notification noti = dataSnapshot.getValue(Notification.class);

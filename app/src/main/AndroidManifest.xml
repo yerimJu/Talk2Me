@@ -3,6 +3,8 @@
     package="com.example.hanium.talktome">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
         android:allowBackup="true"
@@ -36,5 +38,9 @@
             </intent-filter>
         </activity>
     </application>
+
+    <service android:name=".NotificationService"
+        android:enabled="true"/>
+    <receiver android:name=".NotificationReceiver"/>
 
 </manifest>
