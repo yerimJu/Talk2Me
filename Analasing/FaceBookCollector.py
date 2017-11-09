@@ -7,10 +7,32 @@ import urllib.request
 import json
 import datetime
 import BaseCollector
+import facebook
 from collections import OrderedDict
 
-facebook_app_id = '238829726646010'
-facebook_app_secret = 'c79a4b220896c1d784cecdd92cd8f229'
+facebook_app_id = '1415774871877416'
+facebook_app_secret = 'f6e4f025aff488eee5c8437e5788b97c'
+
+class FaceBookCollector(BaseCollector.BaseCollector):
+    def __init__(self):
+        graph = facebook.GraphAPI(access_token="1415774871877416|jzA-PuQwDbOG2m1vPgUYlPJtpn8", version="2.10")
+
+        resp = graph.get_object('me/accounts')
+        page_access_token = None
+        for page in resp['data']:
+            if page['id'] == cfg['page_id']:
+                page_access_token = page['access_tokken']
+        graph = facebook.GraphAPI(page_access_token)
+
+        return graph
+
+    def get_json(self):
+        pass
+
+    def get_csv(self):
+        pass
+
+
 
 
 class FaceBookCollector(BaseCollector.BaseCollector):
@@ -192,6 +214,7 @@ def main():
         outfile.write(str_)
 
     print('%s_facebook_%s_%s.json SAVED' % (page_name, from_date, to_date))
+
 
 if __name__ == '__main__':
     main()
