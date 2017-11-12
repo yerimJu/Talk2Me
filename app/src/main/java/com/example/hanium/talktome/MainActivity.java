@@ -32,6 +32,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -96,12 +97,26 @@ public class MainActivity extends AppCompatActivity{
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean isProhibit(String time){
+    private boolean isProhibit(String time) throws ParseException {
         // 방해금지 시간인지 체크 - true면 방해금지 시간, false면 방해금지 시간 아님(알람 o)
-        return false;
+        // 현재 시간 구하기
+        long now = System.currentTimeMillis();
+        Date now_date = new Date(now);
+
+        // 방해금지 시간 string -> date
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm",java.util.Locale.getDefault());
+        Date proh_date = dateFormat.parse(time);
+
+        // date -> string
+        /*SimpleDateFormat dateFormat = new  SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.getDefault());
+        Date date = new Date();
+        String strDate = dateFormat.format(date);*/
+
+        // 시간 비교, proh_date가 now_date보다 이후 일때 true, 아니면 false
+        return proh_date.after(now_date);
     }
 
-    private void set_notification(){
+    private void set_notification(String title, String content){
         NotificationManager notificationManager= (NotificationManager)MainActivity.this.getSystemService(MainActivity.this.NOTIFICATION_SERVICE);
         Intent intent1 = new Intent(MainActivity.this.getApplicationContext(),MainActivity.class); //인텐트 생성.
 
@@ -110,8 +125,8 @@ public class MainActivity extends AppCompatActivity{
 
         PendingIntent pendingNotificationIntent = PendingIntent.getActivity( MainActivity.this,0, intent1,PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setSmallIcon(R.drawable.icon_facebook).setTicker("HETT").setWhen(System.currentTimeMillis())
-                .setContentTitle("푸쉬 제목")
-                .setContentText("푸쉬내용")
+                .setContentTitle(title)
+                .setContentText(content)
                 .setDefaults(NotificationCompat.DEFAULT_SOUND | NotificationCompat.DEFAULT_VIBRATE)
                 .setContentIntent(pendingNotificationIntent)
                 .setAutoCancel(true)
@@ -165,15 +180,19 @@ public class MainActivity extends AppCompatActivity{
         ChildEventListener notificationListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                // 푸시알람이 오게 해야함
-                if(!isProhibit("S"))
-                    set_notification();
-
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
 
                 Notification noti = dataSnapshot.getValue(Notification.class);
                 Log.d(TAG, "I got a new notification :)\n"+noti.toString());
                 testArray.add(new ChildListData(null, noti.getContents()));
+
+                // 푸시알람이 오게 해야함
+                try {
+                    if(!isProhibit("2017-12-18 13:30"))
+                        set_notification(noti.title, noti.content);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
