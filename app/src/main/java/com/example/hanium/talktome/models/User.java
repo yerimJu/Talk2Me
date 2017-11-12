@@ -45,6 +45,10 @@ public class User {
     public String getFacebookAccesstoken() {
         return this.facebookAccesstoken;
     }
+    public String getTwitterAccesstoken() { return this.twitterAccesstoken; }
+    public String getGmailAccesstoken() {
+        return this.gmailAccesstoken;
+    }
 
     @Override
     public String toString() {
