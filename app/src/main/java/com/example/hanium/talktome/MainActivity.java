@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity{
     private ArrayList<ChildListData> recommandedNews;
     private ArrayList<ChildListData> alarmsNotCheck;
     private ArrayList<ChildListData> testArray;
+    private ArrayList<ChildListData> PreviousAlarms;
     private HashMap<String, ArrayList<ChildListData>> childList; // parent-child 연결할 hashmap 변수
 
 
@@ -95,6 +96,16 @@ public class MainActivity extends AppCompatActivity{
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean isPrevious(String noti_time, String prev_time) throws ParseException {
+        // 이전알림 조회 날짜 인지 체크
+        // string -> date -> string
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd",java.util.Locale.getDefault());
+        Date temp = dateFormat.parse(noti_time);
+        String strDate = dateFormat.format(temp);
+
+        return strDate.equals(prev_time);
     }
 
     private boolean isProhibit(String time) throws ParseException {
@@ -176,6 +187,8 @@ public class MainActivity extends AppCompatActivity{
 
         // DB 정보가 담긴 array
         testArray = new ArrayList<ChildListData>();
+        PreviousAlarms = new ArrayList<ChildListData>();
+
         // 실시간 DB를 위한 child event listener
         ChildEventListener notificationListener = new ChildEventListener() {
             @Override
@@ -188,8 +201,16 @@ public class MainActivity extends AppCompatActivity{
 
                 // 푸시알람이 오게 해야함
                 try {
+                    // 알림 받은 항목에 대해서는 알림을 보내지 않아야 함 - 추가로 기술 필요
+                    // 방해 금지 날짜 받아오는 부분 추가 기술 필요
                     if(!isProhibit("2017-12-18 13:30"))
                         set_notification(noti.title, noti.content);
+
+                    System.out.println("하이2 들어옴");
+                    // 이전 알림 조회 날짜와 현재 날짜가 같다면 이전알림조회 탭에 추가
+                    // 이전 알림 조회 날짜 받아오는 부분 추가 기술 필요
+                    if(isPrevious(noti.date, "2017-11-14"))
+                        PreviousAlarms.add(new ChildListData(null, noti.getContents()));
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -253,6 +274,7 @@ public class MainActivity extends AppCompatActivity{
         parentList.add("    추천 뉴스피드 ("+recommandedNews.size()+")");
         parentList.add("    테스트 전용 탭1 ("+alarmsNotCheck.size()+")");
         parentList.add("    테스트 전용 탭2 ("+testArray.size()+")");
+        parentList.add("    이전 알림 조회 ("+PreviousAlarms.size()+")");
 
         // parent와 child를 hashmap으로 연결
         childList = new HashMap<String, ArrayList<ChildListData>>();
@@ -260,6 +282,7 @@ public class MainActivity extends AppCompatActivity{
         childList.put(parentList.get(1), recommandedNews);
         childList.put(parentList.get(2), alarmsNotCheck);
         childList.put(parentList.get(3), testArray);
+        childList.put(parentList.get(4), PreviousAlarms);
 
         // expandablelistview, customadapter 연결 후 OnClickListener 선언
         expandableListView = (ExpandableListView)findViewById(R.id.expandableListView);
@@ -288,7 +311,7 @@ public class MainActivity extends AppCompatActivity{
                     String key = mDatabase.child("notifications").push().getKey();
                     String userId = mUser.getUid();
 
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("E MMM dd HH:mm:ss", Locale.KOREA);
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.KOREA);
                     Notification noti = new Notification(userId, key, "title", "contentsssss", "https://github.com/yerimJu/Talk2Me",simpleDateFormat);
                     Map<String, Object> notiValues = noti.toMap();
 
