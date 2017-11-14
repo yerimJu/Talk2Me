@@ -46,11 +46,14 @@ public class MainActivity extends AppCompatActivity{
     private static final String TAG = "MainActivity";
 
     // for firebase database
+    //public static final String EXTRA_NOTIFICATION_KEY = "notification_key";
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
+    //private String mNotificationKey;
     private DatabaseReference mNotificationReference;
     private DatabaseReference mUserReference;
+    //private ValueEventListener mNotificationListener;
 
     // extendableListView에 관한 변수들
     private ExpandableListView expandableListView;
@@ -137,12 +140,39 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /* start firebase */
+        /*// Get noti key from intent
+        mNotificationKey = getIntent().getStringExtra(EXTRA_NOTIFICATION_KEY);
+        if (mNotificationKey == null) {
+            throw new IllegalArgumentException("Must pass EXTRA_NOTIFICATION_KEY");
+        }*/
+
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mUser = mAuth.getCurrentUser();
-        Log.d(TAG, "Hi, "+mUser.getEmail());
         final String userId = mUser.getUid();
         mNotificationReference = mDatabase.child("notifications").child(userId);
+
+        //mNotificationReference = mDatabase.child("notifications").child(userId).child(mNotificationKey);
+
+        // intent에 값 넘겨줄 때 사용하는 리스너
+        /*ValueEventListener notificationListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Notification noti = dataSnapshot.getValue(Notification.class);
+                Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
+                Log.d(TAG, "I got a notification :)\n"+noti.toString());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                Toast.makeText(MainActivity.this, "Failed to load notification.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        };
+        mNotificationReference.addValueEventListener(notificationListener);
+        mNotificationListener = notificationListener;*/
 
         // DB 정보가 담긴 array
         testArray = new ArrayList<ChildListData>();
@@ -259,7 +289,7 @@ public class MainActivity extends AppCompatActivity{
                     String userId = mUser.getUid();
 
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("E MMM dd HH:mm:ss", Locale.KOREA);
-                    Notification noti = new Notification(userId, key, "title", "contentsssss", "https://github.com/yerimJu/Talk2Me",simpleDateFormat,false);
+                    Notification noti = new Notification(userId, key, "title", "contentsssss", "https://github.com/yerimJu/Talk2Me",simpleDateFormat);
                     Map<String, Object> notiValues = noti.toMap();
 
                     Map<String, Object> childUpdates = new HashMap<>();
@@ -271,21 +301,39 @@ public class MainActivity extends AppCompatActivity{
                     Toast.makeText(MainActivity.this, "New notification saved in DB",
                             Toast.LENGTH_SHORT).show();
                 } else if (groupPosition==2 && childPosition==1) {
+                    /*// intent에 key 저장 부분 추가 : postListFragment line 76
+                    final DatabaseReference notiRef = mDatabase.child("notifications").getRef()getRef(position);
+
+                    // Set click listener for the whole post view
+                    final String notiKey = notiRef.getKey();
+                    viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Launch PostDetailActivity
+                            Intent intent = new Intent(getActivity(), PostDetailActivity.class);
+                            intent.putExtra(PostDetailActivity.EXTRA_NOTIFICATION_KEY, notiKey);
+                            startActivity(intent);
+                        }
+                    });*/
 
                     // user facebookaccesstoken 불러오기
-                    mUserReference = mDatabase.child("users").child(mUser.getUid());
+                    mUserReference = mDatabase.child("users");
                     Query userQuery = mUserReference;
                     userQuery.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-
-                            User user = dataSnapshot.getValue(User.class);
-                            String facebookAccesstoken = dataSnapshot.child("facebookAccesstoken").getValue().toString();
-
-                            Log.d(TAG, "Current user information : "+ user);
-                            Toast.makeText(MainActivity.this, "Your facebook access token : \n, "+facebookAccesstoken,
-                                    Toast.LENGTH_SHORT).show();
-
+                            for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
+                                // TODO: handle the post
+                                if (userId.equals(userSnapshot.getKey())) {
+                                    User temp = userSnapshot.getValue(User.class);
+                                    Log.d(TAG, "Current user information : "+ temp.toString());
+                                    Toast.makeText(MainActivity.this, "Hi, "+temp.getFacebookAccesstoken()+"!!",
+                                            Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(MainActivity.this, "Cannot access user information",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
                         }
 
                         @Override
@@ -313,5 +361,10 @@ public class MainActivity extends AppCompatActivity{
     @Override
     public void onStop() {
         super.onStop();
+
+        // Remove notification value event listener
+        /*if (mNotificationListener != null) {
+            mNotificationReference.removeEventListener(mNotificationListener);
+        }*/
     }
 }
