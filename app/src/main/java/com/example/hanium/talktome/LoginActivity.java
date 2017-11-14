@@ -85,7 +85,7 @@ public class LoginActivity extends Activity {
 
                 FirebaseUser user = mAuth.getCurrentUser();
                 String userId = user.getUid();
-                mDatabase.child("users").child(userId).child("facebookAccessotken").setValue(fbtoken);
+                mDatabase.child("users").child(userId).child("facebookAccesstoken").setValue(fbtoken);
                 Log.d(TAG, "Facebook Accesstoken saved successfully !");
 
                 //loginResult.getAccessToken() 정보를 가지고 유저 정보를 가져올수 있습니다.

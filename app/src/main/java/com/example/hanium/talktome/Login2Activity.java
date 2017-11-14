@@ -130,7 +130,7 @@ public class Login2Activity extends AppCompatActivity {
 
     // [START basic_write]
     private void writeNewUser(String userId, String name, String email) {
-        User user = new User(name, email);
+        User user = new User(userId, name, email);
 
         mDatabase.child("users").child(userId).setValue(user);
         Log.d(TAG, user.toString());

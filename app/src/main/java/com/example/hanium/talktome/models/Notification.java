@@ -16,18 +16,23 @@ import java.util.Map;
 public class Notification {
 
     public String uid;
-    //public String author;
     public String nid;
     public String title;
     public String content;
     public String url;
     public String date;
+    public String isRead;
 
     public Notification() {
-
+        // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public Notification(String uid, String nid, String title, String content, String url, SimpleDateFormat date) {
+    public Notification(String uid, String nid) {
+        this.uid = uid;
+        this.nid = nid;
+    }
+
+    public Notification(String uid, String nid, String title, String content, String url, SimpleDateFormat date, boolean isRead) {
         this.uid = uid;
         this.nid = nid;
         this.title = title;
@@ -36,14 +41,72 @@ public class Notification {
 
         Date from = new Date();
         this.date = date.format(from);
+
+        this.isRead = String.valueOf(isRead);
     }
 
     public boolean isEmpty() {
         boolean isempty = false;
-        if (this.uid == null || this.nid == null || this.title == null || this.content == null || this.url == null || this.date == null)
+        if (this.uid == null || this.nid == null || this.title == null || this.content == null || this.url == null || this.date == null || this.isRead == null)
             isempty = true;
 
         return isempty;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getNid() {
+        return nid;
+    }
+
+    public void setNid(String nid) {
+        this.nid = nid;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getIsRead() {
+        return isRead;
+    }
+
+    public void setIsRead(String isRead) {
+        this.isRead = isRead;
     }
 
     // [START post_to_map]
@@ -51,16 +114,17 @@ public class Notification {
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("uid", this.uid);
-        //result.put("author", author);
         result.put("nid", this.nid);
         result.put("title", this.title);
         result.put("content", this.content);
         result.put("url", this.url);
         result.put("date", this.date);
+        result.put("isRead", this.isRead);
 
         return result;
     }
     // [END post_to_map]
+
 
     @Override
     public String toString() {
@@ -70,11 +134,12 @@ public class Notification {
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 ", url='" + url + '\'' +
-                ", date=" + date +
+                ", date='" + date + '\'' +
+                ", isRead='" + isRead + '\'' +
                 '}';
     }
 
     public String getContents() {
-        return date+"\n"+title+"\n"+content+"\n"+url;
+        return date + "\n" + title + "\n" + content + "\n" + url;
     }
 }

@@ -13,8 +13,9 @@ import java.util.Map;
 @IgnoreExtraProperties
 public class User {
 
-    public String username;
-    public String email;
+    private String uid;
+    private String username;
+    private String email;
 
     private String facebookAccesstoken;
     private String twitterAccesstoken;
@@ -24,36 +25,68 @@ public class User {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String username, String email) {
+    public User(String uid, String username, String email) {
+        this.uid = uid;
         this.username = username;
+        this.email = email;
+        this.facebookAccesstoken = "null";
+        this.twitterAccesstoken = "null";
+        this.gmailAccesstoken = "null";
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
         this.email = email;
     }
 
-    public User(String username, String email, String fbacstkn) {
-        this.username = username;
-        this.email = email;
-        this.facebookAccesstoken = fbacstkn;
-    }
-
-    public void setFacebookAccesstoken(String acstoken) { this.facebookAccesstoken = acstoken; }
-    public void setTwitterAccesstoken(String acstoken) {
-        this.twitterAccesstoken = acstoken;
-    }
-    public void setGmailAccesstoken(String acstoken) {
-        this.gmailAccesstoken = acstoken;
-    }
     public String getFacebookAccesstoken() {
-        return this.facebookAccesstoken;
+        return facebookAccesstoken;
     }
-    public String getTwitterAccesstoken() { return this.twitterAccesstoken; }
+
+    public void setFacebookAccesstoken(String facebookAccesstoken) {
+        this.facebookAccesstoken = facebookAccesstoken;
+    }
+
+    public String getTwitterAccesstoken() {
+        return twitterAccesstoken;
+    }
+
+    public void setTwitterAccesstoken(String twitterAccesstoken) {
+        this.twitterAccesstoken = twitterAccesstoken;
+    }
+
     public String getGmailAccesstoken() {
-        return this.gmailAccesstoken;
+        return gmailAccesstoken;
+    }
+
+    public void setGmailAccesstoken(String gmailAccesstoken) {
+        this.gmailAccesstoken = gmailAccesstoken;
     }
 
     @Override
     public String toString() {
         return "User{" +
-                "username='" + username + '\'' +
+                "uid='" + uid + '\'' +
+                ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", facebookAccesstoken='" + facebookAccesstoken + '\'' +
                 ", twitterAccesstoken='" + twitterAccesstoken + '\'' +
@@ -64,14 +97,12 @@ public class User {
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
+        result.put("uid", this.uid);
         result.put("username", this.username);
         result.put("email", this.email);
-        if (this.facebookAccesstoken != null)
-            result.put("facebookAccesstoken",this.facebookAccesstoken);
-        if (this.twitterAccesstoken != null)
-            result.put("twitterAccesstoken",this.twitterAccesstoken);
-        if (this.gmailAccesstoken != null)
-            result.put("gmailAccesstoken",this.gmailAccesstoken);
+        result.put("facebookAccesstoken", this.facebookAccesstoken);
+        result.put("twitterAccesstoken", this.twitterAccesstoken);
+        result.put("gmailAccesstoken", this.gmailAccesstoken);
 
         return result;
     }

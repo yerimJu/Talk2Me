@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,27 @@ import android.widget.PopupWindow;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.hanium.talktome.models.Notification;
+import com.example.hanium.talktome.models.Setting;
+import com.example.hanium.talktome.models.User;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import static com.example.hanium.talktome.R.id.edit_keyword;
 
 /**
@@ -24,6 +46,15 @@ import static com.example.hanium.talktome.R.id.edit_keyword;
  */
 
 public class SettingActivity extends AppCompatActivity {
+
+    private static final String TAG = "SettingActivity";
+
+    // for firebase database
+    private DatabaseReference mDatabase;
+    private FirebaseAuth mAuth;
+    private FirebaseUser mUser;
+    private DatabaseReference mSettingReference;
+
     private PopupWindow pwindo;
     private EditText edit_keyword;
     private DatePicker datepick;
@@ -36,6 +67,11 @@ public class SettingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.setting);
+
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mUser = mAuth.getCurrentUser();
+        mSettingReference = mDatabase.child("settings");
     }
 
     public void mOnClick(View v) {
@@ -44,10 +80,10 @@ public class SettingActivity extends AppCompatActivity {
 
         switch (v.getId()) {
             case R.id.postManage:
-                Toast.makeText(getApplicationContext(),"관리할 게시물이 없습니다.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "관리할 게시물이 없습니다.", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.modifyProfile:
-                Toast.makeText(getApplicationContext(),"수정할 프로필정보가 없습니다.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "수정할 프로필정보가 없습니다.", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.outMember:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);     // 여기서 this는 Activity의 this
@@ -55,18 +91,18 @@ public class SettingActivity extends AppCompatActivity {
                 builder.setTitle("회원탈퇴")        // 제목 설정
                         .setMessage("정말로 회원탈퇴 하시겠습니까?")        // 메세지 설정
                         .setCancelable(false)        // 뒤로 버튼 클릭시 취소 가능 설정
-                        .setPositiveButton("네", new DialogInterface.OnClickListener(){
+                        .setPositiveButton("네", new DialogInterface.OnClickListener() {
                             // 확인 버튼 클릭시 설정
-                            public void onClick(DialogInterface dialog, int whichButton){
-                                Toast.makeText(getApplicationContext(),"회원 탈퇴 되었습니다.",Toast.LENGTH_SHORT).show();
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                Toast.makeText(getApplicationContext(), "회원 탈퇴 되었습니다.", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(SettingActivity.this, Login2Activity.class);
                                 startActivity(intent);
                                 finish();
                             }
                         })
-                        .setNegativeButton("아니오", new DialogInterface.OnClickListener(){
+                        .setNegativeButton("아니오", new DialogInterface.OnClickListener() {
                             // 취소 버튼 클릭시 설정
-                            public void onClick(DialogInterface dialog, int whichButton){
+                            public void onClick(DialogInterface dialog, int whichButton) {
                                 dialog.cancel();
                             }
                         });
@@ -76,7 +112,7 @@ public class SettingActivity extends AppCompatActivity {
 
                 break;
             case R.id.event:
-                Toast.makeText(getApplicationContext(),"현재 진행중인 이벤트가 없습니다.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "현재 진행중인 이벤트가 없습니다.", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.notice:
 //                Intent noticeIntent = new Intent(SettingActivity.this,  Notice.class);
@@ -132,34 +168,95 @@ public class SettingActivity extends AppCompatActivity {
                 break;
         }
     }
-    public void MakePopup(View layout, int id){
-        if(id==3) pwindo = new PopupWindow(layout, 1000, 1600, true);
-        else if(id==4) pwindo = new PopupWindow(layout, 1000, 1400, true);
+
+    public void MakePopup(View layout, int id) {
+        if (id == 3) pwindo = new PopupWindow(layout, 1000, 1600, true);
+        else if (id == 4) pwindo = new PopupWindow(layout, 1000, 1400, true);
         else pwindo = new PopupWindow(layout, 1000, 800, true);
         pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
 
-        if(id == 1) edit_keyword = (EditText) layout.findViewById(R.id.edit_keyword);
-        else if(id==3)
+        if (id == 1) edit_keyword = (EditText) layout.findViewById(R.id.edit_keyword);
+        else if (id == 3)
             datepick = (DatePicker) layout.findViewById(R.id.datepick);
-        else if(id==4)
+        else if (id == 4)
             timepick = (TimePicker) layout.findViewById(R.id.timepick);
 
     }
-    public void btn_no(View v){
+
+    public void btn_no(View v) {
         pwindo.dismiss();
     }
 
     //1. 키워드 설정
-    public void btn_keyword_yes(View v){
+    public void btn_keyword_yes(View v) {
         Str_keyword = edit_keyword.getText().toString();
-        if(Str_keyword.equals(""))
+        if (Str_keyword.equals(""))
             Toast.makeText(getApplicationContext(), "키워드가 설정되지 않았습니다. 다시 입력해주세요.", Toast.LENGTH_SHORT).show();
 
         else {
-            Toast.makeText(getApplicationContext(), "키워드가 " + Str_keyword + "로 설정되었습니다.", Toast.LENGTH_SHORT).show();
-            // 키워드 디비에 저장
+
+            // 키워드 디비에 저장 -> 미완성
+            // list 저장의 효율적인 방안에 대해 고민 중
+            Query saveKeywordQuery = mSettingReference.child(mUser.getUid());
+            saveKeywordQuery.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    /*
+                    Map<String, Object> childUpdates = new HashMap<>();
+                    Setting temp_setting = dataSnapshot.getValue(Setting.class);
+                    if (temp_setting == null) {
+                        temp_setting = new Setting(mUser.getUid());
+                    }
+                    temp_setting.addKeywordList(Str_keyword);
+                    childUpdates.put("/settings/"+mUser.getUid(), temp_setting.toMap());
+                    mDatabase.updateChildren(childUpdates);*/
+
+                    Toast.makeText(getApplicationContext(), "키워드 " + Str_keyword + "가 성공적으로 저장되었습니다.", Toast.LENGTH_SHORT).show();
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    // Getting Post failed, log a message
+                    Log.w(TAG, "loadUser:onCancelled", databaseError.toException());
+                    // ...
+                    Toast.makeText(getApplicationContext(), "현재 키워드 저장 기능이 작동되지 않습니다.", Toast.LENGTH_SHORT).show();
+                }
+            });
+
 
             // 설정된 키워드 관련 알림 가져오기
+            Query readKeywordQuery = mSettingReference.child(mUser.getUid()).child("keywordList");
+            readKeywordQuery.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    List<String> keywordList = new ArrayList<>();
+
+                    for (DataSnapshot keywordSnapshot : dataSnapshot.getChildren()) {
+                        // TODO: handle the post
+                        String keyword = keywordSnapshot.getValue(String.class);
+                        keywordList.add(keyword);
+                    }
+
+                    if (keywordList.isEmpty()) {
+                        Toast.makeText(getApplicationContext(), "저장된 키워드가 없습니다.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "저장된 키워드 : " + keywordList.toString(), Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    // Getting Post failed, log a message
+                    Log.w(TAG, "loadUser:onCancelled", databaseError.toException());
+                    // ...
+                    Toast.makeText(getApplicationContext(), "현재 키워드 불러오기 기능이 작동되지 않습니다.", Toast.LENGTH_SHORT).show();
+                }
+            });
+
             pwindo.dismiss();
         }
     }
@@ -168,12 +265,12 @@ public class SettingActivity extends AppCompatActivity {
     // 친구를 뭐로할지
 
     //3. 시간여행 설정
-    public void btn_time_yes(View v){
+    public void btn_time_yes(View v) {
         Str_year = String.valueOf(datepick.getYear());
         Str_month = String.valueOf(datepick.getMonth() + 1);
         Str_day = String.valueOf(datepick.getDayOfMonth());
 
-        Toast.makeText(getApplicationContext(), "시간 여행 할 날짜가 " + Str_year+"년 "+Str_month+"월 "+Str_day+"일" + "로 설정되었습니다.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "시간 여행 할 날짜가 " + Str_year + "년 " + Str_month + "월 " + Str_day + "일" + "로 설정되었습니다.", Toast.LENGTH_SHORT).show();
         // 이전 알림 조회 시간 디비에 저장
 
         // 설정된 시간의 알림 가져오기
@@ -182,11 +279,11 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     //4. 방해금지 모드 설정
-    public void btn_noring_yes(View v){
+    public void btn_noring_yes(View v) {
         Str_hour = String.valueOf(timepick.getCurrentHour());
         Str_minute = String.valueOf(timepick.getCurrentMinute());
 
-        Toast.makeText(getApplicationContext(), "방해금지 시간이 현재부터 " + Str_hour+":"+Str_minute+" 까지로 설정되었습니다.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "방해금지 시간이 현재부터 " + Str_hour + ":" + Str_minute + " 까지로 설정되었습니다.", Toast.LENGTH_SHORT).show();
         // 방해 금지 시간 디비에 저장
 
         // 설정된 시간의 알림 막기
