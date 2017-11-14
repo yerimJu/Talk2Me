@@ -41,19 +41,16 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
     // for firebase database
-    //public static final String EXTRA_NOTIFICATION_KEY = "notification_key";
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
-    //private String mNotificationKey;
     private DatabaseReference mNotificationReference;
     private DatabaseReference mUserReference;
-    //private ValueEventListener mNotificationListener;
 
     // extendableListView에 관한 변수들
     private ExpandableListView expandableListView;
@@ -63,6 +60,7 @@ public class MainActivity extends AppCompatActivity{
     private ArrayList<ChildListData> recommandedNews;
     private ArrayList<ChildListData> alarmsNotCheck;
     private ArrayList<ChildListData> testArray;
+    private ArrayList<ChildListData> PreviousAlarms;
     private HashMap<String, ArrayList<ChildListData>> childList; // parent-child 연결할 hashmap 변수
 
 
@@ -77,10 +75,10 @@ public class MainActivity extends AppCompatActivity{
 
     //액션버튼을 클릭했을때의 동작
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        switch (id){
+        switch (id) {
             case R.id.action_setting:
                 Intent intent = new Intent(MainActivity.this, SettingActivity.class);
                 startActivity(intent);
@@ -97,6 +95,16 @@ public class MainActivity extends AppCompatActivity{
         return super.onOptionsItemSelected(item);
     }
 
+    private boolean isPrevious(String noti_time, String prev_time) throws ParseException {
+        // 이전알림 조회 날짜 인지 체크
+        // string -> date -> string
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd",java.util.Locale.getDefault());
+        Date temp = dateFormat.parse(noti_time);
+        String strDate = dateFormat.format(temp);
+
+        return strDate.equals(prev_time);
+    }
+
     private boolean isProhibit(String time) throws ParseException {
         // 방해금지 시간인지 체크 - true면 방해금지 시간, false면 방해금지 시간 아님(알람 o)
         // 현재 시간 구하기
@@ -104,7 +112,7 @@ public class MainActivity extends AppCompatActivity{
         Date now_date = new Date(now);
 
         // 방해금지 시간 string -> date
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm",java.util.Locale.getDefault());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.getDefault());
         Date proh_date = dateFormat.parse(time);
 
         // date -> string
@@ -116,14 +124,14 @@ public class MainActivity extends AppCompatActivity{
         return proh_date.after(now_date);
     }
 
-    private void set_notification(String title, String content){
-        NotificationManager notificationManager= (NotificationManager)MainActivity.this.getSystemService(MainActivity.this.NOTIFICATION_SERVICE);
-        Intent intent1 = new Intent(MainActivity.this.getApplicationContext(),MainActivity.class); //인텐트 생성.
+    private void set_notification(String title, String content) {
+        NotificationManager notificationManager = (NotificationManager) MainActivity.this.getSystemService(MainActivity.this.NOTIFICATION_SERVICE);
+        Intent intent1 = new Intent(MainActivity.this.getApplicationContext(), MainActivity.class); //인텐트 생성.
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
-        intent1.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP| Intent.FLAG_ACTIVITY_CLEAR_TOP);//현재 액티비티를 최상으로 올리고, 최상의 액티비티를 제외한 모든 액티비티를없앤다.
+        intent1.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);//현재 액티비티를 최상으로 올리고, 최상의 액티비티를 제외한 모든 액티비티를없앤다.
 
-        PendingIntent pendingNotificationIntent = PendingIntent.getActivity( MainActivity.this,0, intent1,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingNotificationIntent = PendingIntent.getActivity(MainActivity.this, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setSmallIcon(R.drawable.icon_facebook).setTicker("HETT").setWhen(System.currentTimeMillis())
                 .setContentTitle(title)
                 .setContentText(content)
@@ -135,47 +143,23 @@ public class MainActivity extends AppCompatActivity{
 
         notificationManager.notify(1, builder.build()); // Notification send
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /* start firebase */
-        /*// Get noti key from intent
-        mNotificationKey = getIntent().getStringExtra(EXTRA_NOTIFICATION_KEY);
-        if (mNotificationKey == null) {
-            throw new IllegalArgumentException("Must pass EXTRA_NOTIFICATION_KEY");
-        }*/
-
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mUser = mAuth.getCurrentUser();
+        Log.d(TAG, "Hi, " + mUser.getEmail());
         final String userId = mUser.getUid();
         mNotificationReference = mDatabase.child("notifications").child(userId);
 
-        //mNotificationReference = mDatabase.child("notifications").child(userId).child(mNotificationKey);
-
-        // intent에 값 넘겨줄 때 사용하는 리스너
-        /*ValueEventListener notificationListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Notification noti = dataSnapshot.getValue(Notification.class);
-                Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
-                Log.d(TAG, "I got a notification :)\n"+noti.toString());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                Toast.makeText(MainActivity.this, "Failed to load notification.",
-                        Toast.LENGTH_SHORT).show();
-            }
-        };
-        mNotificationReference.addValueEventListener(notificationListener);
-        mNotificationListener = notificationListener;*/
-
         // DB 정보가 담긴 array
         testArray = new ArrayList<ChildListData>();
+        PreviousAlarms = new ArrayList<ChildListData>();
+
         // 실시간 DB를 위한 child event listener
         ChildEventListener notificationListener = new ChildEventListener() {
             @Override
@@ -183,13 +167,23 @@ public class MainActivity extends AppCompatActivity{
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
 
                 Notification noti = dataSnapshot.getValue(Notification.class);
-                Log.d(TAG, "I got a new notification :)\n"+noti.toString());
+                Log.d(TAG, "I got a new notification :)\n" + noti.toString());
                 testArray.add(new ChildListData(null, noti.getContents()));
 
                 // 푸시알람이 오게 해야함
                 try {
+
+                    // 알림 받은 항목에 대해서는 알림을 보내지 않아야 함 - 추가로 기술 필요
+                    // 방해 금지 날짜 받아오는 부분 추가 기술 필요
                     if(!isProhibit("2017-12-18 13:30"))
                         set_notification(noti.title, noti.content);
+
+                    System.out.println("하이2 들어옴");
+                    // 이전 알림 조회 날짜와 현재 날짜가 같다면 이전알림조회 탭에 추가
+                    // 이전 알림 조회 날짜 받아오는 부분 추가 기술 필요
+                    if(isPrevious(noti.date, "2017-11-14"))
+                        PreviousAlarms.add(new ChildListData(null, noti.getContents()));
+
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -206,7 +200,7 @@ public class MainActivity extends AppCompatActivity{
                 Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
 
                 Notification noti = dataSnapshot.getValue(Notification.class);
-                Log.d(TAG, "This notification was removed :(\n"+noti.toString());
+                Log.d(TAG, "This notification was removed :(\n" + noti.toString());
             }
 
             @Override
@@ -249,10 +243,11 @@ public class MainActivity extends AppCompatActivity{
 
         // list에 항목 넣기
         parentList = new ArrayList<String>();
-        parentList.add("    확인 할 알림 ("+alarmsToCheck.size()+")");
-        parentList.add("    추천 뉴스피드 ("+recommandedNews.size()+")");
-        parentList.add("    테스트 전용 탭1 ("+alarmsNotCheck.size()+")");
-        parentList.add("    테스트 전용 탭2 ("+testArray.size()+")");
+        parentList.add("    확인 할 알림 (" + alarmsToCheck.size() + ")");
+        parentList.add("    추천 뉴스피드 (" + recommandedNews.size() + ")");
+        parentList.add("    테스트 전용 탭1 (" + alarmsNotCheck.size() + ")");
+        parentList.add("    테스트 전용 탭2 (" + testArray.size() + ")");
+        parentList.add("    이전 알림 조회 ("+PreviousAlarms.size()+")");
 
         // parent와 child를 hashmap으로 연결
         childList = new HashMap<String, ArrayList<ChildListData>>();
@@ -260,9 +255,10 @@ public class MainActivity extends AppCompatActivity{
         childList.put(parentList.get(1), recommandedNews);
         childList.put(parentList.get(2), alarmsNotCheck);
         childList.put(parentList.get(3), testArray);
+        childList.put(parentList.get(4), PreviousAlarms);
 
         // expandablelistview, customadapter 연결 후 OnClickListener 선언
-        expandableListView = (ExpandableListView)findViewById(R.id.expandableListView);
+        expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
         mCustomListViewAdapter = new CustomExpandableListViewAdapter(this, parentList, childList);
         expandableListView.setAdapter(mCustomListViewAdapter);
 
@@ -288,52 +284,33 @@ public class MainActivity extends AppCompatActivity{
                     String key = mDatabase.child("notifications").push().getKey();
                     String userId = mUser.getUid();
 
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("E MMM dd HH:mm:ss", Locale.KOREA);
-                    Notification noti = new Notification(userId, key, "title", "contentsssss", "https://github.com/yerimJu/Talk2Me",simpleDateFormat);
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.KOREA);
+                    Notification noti = new Notification(userId, key, "title", "contentsssss", "https://github.com/yerimJu/Talk2Me", simpleDateFormat, false);
                     Map<String, Object> notiValues = noti.toMap();
 
                     Map<String, Object> childUpdates = new HashMap<>();
                     childUpdates.put("/notifications/" + userId + "/" + key, notiValues);
 
                     mDatabase.updateChildren(childUpdates);
-                    Log.d(TAG, "noti was saved :)\n"+noti.toString());
+                    Log.d(TAG, "noti was saved :)\n" + noti.toString());
 
                     Toast.makeText(MainActivity.this, "New notification saved in DB",
                             Toast.LENGTH_SHORT).show();
-                } else if (groupPosition==2 && childPosition==1) {
-                    /*// intent에 key 저장 부분 추가 : postListFragment line 76
-                    final DatabaseReference notiRef = mDatabase.child("notifications").getRef()getRef(position);
-
-                    // Set click listener for the whole post view
-                    final String notiKey = notiRef.getKey();
-                    viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Launch PostDetailActivity
-                            Intent intent = new Intent(getActivity(), PostDetailActivity.class);
-                            intent.putExtra(PostDetailActivity.EXTRA_NOTIFICATION_KEY, notiKey);
-                            startActivity(intent);
-                        }
-                    });*/
-
+                } else if (groupPosition == 2 && childPosition == 1) {
                     // user facebookaccesstoken 불러오기
-                    mUserReference = mDatabase.child("users");
+                    mUserReference = mDatabase.child("users").child(mUser.getUid());
                     Query userQuery = mUserReference;
                     userQuery.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
-                                // TODO: handle the post
-                                if (userId.equals(userSnapshot.getKey())) {
-                                    User temp = userSnapshot.getValue(User.class);
-                                    Log.d(TAG, "Current user information : "+ temp.toString());
-                                    Toast.makeText(MainActivity.this, "Hi, "+temp.getFacebookAccesstoken()+"!!",
-                                            Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(MainActivity.this, "Cannot access user information",
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            }
+
+                            User user = dataSnapshot.getValue(User.class);
+                            String facebookAccesstoken = dataSnapshot.child("facebookAccesstoken").getValue().toString();
+
+                            Log.d(TAG, "Current user information : "+ user);
+                            Toast.makeText(MainActivity.this, "Your facebook access token : \n, "+facebookAccesstoken,
+                                    Toast.LENGTH_SHORT).show();
+
                         }
 
                         @Override
@@ -361,10 +338,5 @@ public class MainActivity extends AppCompatActivity{
     @Override
     public void onStop() {
         super.onStop();
-
-        // Remove notification value event listener
-        /*if (mNotificationListener != null) {
-            mNotificationReference.removeEventListener(mNotificationListener);
-        }*/
     }
 }
