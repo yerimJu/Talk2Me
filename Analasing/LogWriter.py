@@ -1,7 +1,11 @@
 import datetime
+import messageType
+import re
 
 
 class LogWriter:
+    pattern = re.compile(r"\[(.+?)\] .+")
+
     def __init__(self, file_name):
         self.file_name = file_name
         self.file = open(file_name, 'a')  # if file not exists create new file
@@ -17,18 +21,29 @@ class LogWriter:
 
     @staticmethod
     def get_time(message):
-        # TODO: 메세지를 받아와서 그 메세지를 파싱해 시간 부분을 반환하기
-        pass
+
+        match = LogWriter.pattern.match(message)
+        return match[2]
 
     @staticmethod
-    def get_messagetype(message):
-        # TODO: 메세지 타입을 읽어와서 반환하기
-        pass
+    def get_message_type(message):
+        # Collect From Twitter: Target='asdfasdf'
+        # Collect From Facebook: Target='asdfasdf'
+        # FaceBook: Found Users Collect Targets
+
+        collect_pattern = re.compile("Collect From (Twitter|Facebook): Target='(.+)'")
+        target_pattern = re.compile("(Twitter|Facebook|): (.+)")
+        if re.match(collect_pattern, LogWriter.get_message(message)):
+            return messageType.MessageType.Collect
+        if re.match(target_pattern, LogWriter.get_message(message)):
+            return messageType.MessageType.UserRead
+        # TODO: Debug this part
+        return messageType.MessageType.Unknown
 
     @staticmethod
     def get_message(message):
-        # TODO: 시간을 제외한 메세지 부분만 반환하기
-        pass
+        match = LogWriter.pattern.match(message)
+        return match[1]
 
     def get_last_scrap_time(self):
         self.file = open(self.file_name, 'r')
@@ -48,8 +63,9 @@ class LogWriter:
 
 
 if __name__ == '__main__':
-    lw = LogWriter('C:/Users/user/Desktop/test.txt')
+    lw = LogWriter('test.txt')
     for i in range(0, 10):
         lw.write_log('test' + str(i))
 
+    lw.get_message_type('[asdfasdfa] 123456567778')
     lw.get_last_scrap_time()

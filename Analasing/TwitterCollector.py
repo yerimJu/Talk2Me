@@ -35,6 +35,7 @@ class TwitterCollector:
             print(tweet.id_str)
             print(tweet.created_at)
 
+
 if __name__ == '__main__':
     tc = TwitterCollector()
 
