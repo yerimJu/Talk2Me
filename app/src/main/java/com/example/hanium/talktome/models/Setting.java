@@ -1,12 +1,8 @@
 package com.example.hanium.talktome.models;
 
 import com.google.firebase.database.Exclude;
-import com.google.gson.Gson;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,9 +12,9 @@ import java.util.Map;
 public class Setting {
 
     private String uid;
-    private List<String> rssFieldList;
-    private List<String> keywordList;
-    private List<String> priorityGroupList;
+    private int rssFields;
+    private int keywords;
+    private int priorityGroup;
     private String startNotiTime;
     private String endNotiTime;
 
@@ -28,21 +24,21 @@ public class Setting {
 
     public Setting(String uid) {
         this.uid = uid;
-        this.rssFieldList = new ArrayList<>();
-        this.keywordList = new ArrayList<>();
-        this.priorityGroupList = new ArrayList<>();
+        this.rssFields = 0;
+        this.keywords = 0;
+        this.priorityGroup = 0;
     }
 
-    public void addRssFieldList(String rss) {
-        this.rssFieldList.add(rss);
+    public void addRssField(String rss) {
+        this.rssFields++;
     }
 
-    public void addKeywordList(String kw) {
-        this.keywordList.add(kw);
+    public void addKeyword(String kw) {
+        this.keywords++;
     }
 
-    public void addPriorityGroupList(String person) {
-        this.priorityGroupList.add(person);
+    public void addPriorityGroup(String person) {
+        this.priorityGroup++;
     }
 
     public void setNotiTimes(String startNotiTime, String endNotiTime) {
@@ -54,16 +50,16 @@ public class Setting {
         return uid;
     }
 
-    public Collection getRssFieldList() {
-        return rssFieldList;
+    public int getRssField() {
+        return rssFields;
     }
 
-    public Collection getKeywordList() {
-        return keywordList;
+    public int getKeyword() {
+        return keywords;
     }
 
-    public Collection getPriorityGroupList() {
-        return priorityGroupList;
+    public int getPriorityGroup() {
+        return priorityGroup;
     }
 
     public String getStartNotiTime() {
@@ -78,9 +74,9 @@ public class Setting {
     public String toString() {
         return "Setting{" +
                 "uid='" + uid + '\'' +
-                ", rssFieldList=" + rssFieldList +
-                ", keywordList=" + keywordList +
-                ", priorityGroupList=" + priorityGroupList +
+                ", rssField=" + rssFields +
+                ", keyword=" + keywords +
+                ", priorityGroup=" + priorityGroup +
                 ", startNotiTime='" + startNotiTime + '\'' +
                 ", endNotiTime='" + endNotiTime + '\'' +
                 '}';
@@ -90,9 +86,9 @@ public class Setting {
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("uid", uid);
-        result.put("rssFieldList", rssFieldList);
-        result.put("keywordList", keywordList);
-        result.put("priorityGroupList", priorityGroupList);
+        result.put("rssField", String.valueOf(rssFields));
+        result.put("keyword", String.valueOf(keywords));
+        result.put("priorityGroup", String.valueOf(priorityGroup));
         result.put("startNotiTime", startNotiTime);
         result.put("endNotiTime", endNotiTime);
 

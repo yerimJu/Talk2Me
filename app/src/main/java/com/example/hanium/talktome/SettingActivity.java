@@ -31,9 +31,11 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -54,6 +56,7 @@ public class SettingActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
     private DatabaseReference mSettingReference;
+    private DatabaseReference mNotificationReference;
 
     private PopupWindow pwindo;
     private EditText edit_keyword;
@@ -72,6 +75,7 @@ public class SettingActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mUser = mAuth.getCurrentUser();
         mSettingReference = mDatabase.child("settings");
+        mNotificationReference = mDatabase.child("notifications");
     }
 
     public void mOnClick(View v) {
@@ -195,39 +199,13 @@ public class SettingActivity extends AppCompatActivity {
 
         else {
 
-            // 키워드 디비에 저장 -> 미완성
-            // list 저장의 효율적인 방안에 대해 고민 중
-            Query saveKeywordQuery = mSettingReference.child(mUser.getUid());
-            saveKeywordQuery.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    /*
-                    Map<String, Object> childUpdates = new HashMap<>();
-                    Setting temp_setting = dataSnapshot.getValue(Setting.class);
-                    if (temp_setting == null) {
-                        temp_setting = new Setting(mUser.getUid());
-                    }
-                    temp_setting.addKeywordList(Str_keyword);
-                    childUpdates.put("/settings/"+mUser.getUid(), temp_setting.toMap());
-                    mDatabase.updateChildren(childUpdates);*/
-
-                    Toast.makeText(getApplicationContext(), "키워드 " + Str_keyword + "가 성공적으로 저장되었습니다.", Toast.LENGTH_SHORT).show();
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    // Getting Post failed, log a message
-                    Log.w(TAG, "loadUser:onCancelled", databaseError.toException());
-                    // ...
-                    Toast.makeText(getApplicationContext(), "현재 키워드 저장 기능이 작동되지 않습니다.", Toast.LENGTH_SHORT).show();
-                }
-            });
-
+            // 키워드 디비에 저장
+            DatabaseReference mKeywordReference = mDatabase.child("settings").child(mUser.getUid()).child("keywords");
+            mKeywordReference.push().setValue(Str_keyword);
+            Toast.makeText(getApplicationContext(), "키워드 " + Str_keyword + "가 성공적으로 저장되었습니다.", Toast.LENGTH_SHORT).show();
 
             // 설정된 키워드 관련 알림 가져오기
-            Query readKeywordQuery = mSettingReference.child(mUser.getUid()).child("keywordList");
+            Query readKeywordQuery = mSettingReference.child(mUser.getUid()).child("keywords");
             readKeywordQuery.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -272,8 +250,59 @@ public class SettingActivity extends AppCompatActivity {
 
         Toast.makeText(getApplicationContext(), "시간 여행 할 날짜가 " + Str_year + "년 " + Str_month + "월 " + Str_day + "일" + "로 설정되었습니다.", Toast.LENGTH_SHORT).show();
         // 이전 알림 조회 시간 디비에 저장
+        // -> 저장 할 필요 없을 것 같음. 불러오기 기능이므로
+        //    날짜 설정은 당일이 아닌 n일 이었던 것 같은데 이에 대한 입력 form 수정 필요
 
         // 설정된 시간의 알림 가져오기
+        // -> 일단 해당 날짜로 조회하는 기능으로 구현하였음
+        Query loadNotificationByTimeQuery = mNotificationReference.child(mUser.getUid());
+        loadNotificationByTimeQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                List<String> notificationList = new ArrayList<>();
+                Log.d(TAG, "입력 format : " + Str_year + "년 " + Str_month + "월 " + Str_day + "일");
+
+                for (DataSnapshot notificationSnapshot : dataSnapshot.getChildren()) {
+                    // TODO: handle the post
+                    Notification notification = notificationSnapshot.getValue(Notification.class);
+
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                    try {
+                        Date date = simpleDateFormat.parse(notification.getDate());
+                        int year = date.getYear() < 1900 ? date.getYear()+1900 : date.getYear();
+                        int month = date.getMonth()+1;
+                        int day = date.getDay()+12; //??
+                        Log.d(TAG, "검사 중 ... " + year+"년 "+month+"월 "+day+"일");
+                        if (Str_year.equals(String.valueOf(year)) && Str_month.equals(String.valueOf(month)) && Str_day.equals(String.valueOf(day))) {
+                            notificationList.add(notification.getNid());
+                        }
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        Log.d(TAG, "date format으로 변환할 수 없습니다.");
+                    }
+                }
+
+                if (notificationList.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), Str_year + "년 " + Str_month + "월 " + Str_day + "일에 알림이 없습니다.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.d(TAG, notificationList.toString());
+                    Toast.makeText(getApplicationContext(), Str_year + "년 " + Str_month + "월 " + Str_day + "일의 알림 id : " +
+                            notificationList.toString(), Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadUser:onCancelled", databaseError.toException());
+                // ...
+                Toast.makeText(getApplicationContext(), "현재 키워드 불러오기 기능이 작동되지 않습니다.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         pwindo.dismiss();
 
     }
