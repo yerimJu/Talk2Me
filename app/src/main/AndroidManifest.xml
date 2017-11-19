@@ -18,13 +18,13 @@
 
         <activity android:name=".MainActivity">
         </activity>
-        <activity android:name=".LoginActivity"
+        <activity android:name=".SNSLoginActivity"
             android:configChanges=
                 "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"/>
 
-        <activity android:name=".Login2Activity" android:configChanges="keyboard|keyboardHidden"/>
-        <activity android:name=".JoinActivity" android:configChanges="keyboard|keyboardHidden" android:label="회원가입"/>
+        <activity android:name=".SignInActivity" android:configChanges="keyboard|keyboardHidden"/>
+        <activity android:name=".SignUpActivity" android:configChanges="keyboard|keyboardHidden" android:label="회원가입"/>
         <activity android:name=".PwFindRequestActivity" android:configChanges="keyboard|keyboardHidden" android:label="비밀번호 찾기"/>
         <activity android:name=".IdFindRequestActivity" android:configChanges="keyboard|keyboardHidden" android:label="아이디 찾기"/>
         <activity android:name=".SettingActivity" android:label="Setting" />

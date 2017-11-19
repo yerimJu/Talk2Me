@@ -2,7 +2,6 @@ package com.example.hanium.talktome;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -14,20 +13,17 @@ import android.widget.Toast;
 import com.example.hanium.talktome.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 /**
- * Created by SAMSUNG on 2017-07-30.
+ * Created by Jisu on 2017-11-19.
  */
 
-public class Login2Activity extends AppCompatActivity {
+public class SignInActivity extends AppCompatActivity {
 
     // for firebase database
     private DatabaseReference mDatabase;
@@ -59,7 +55,7 @@ public class Login2Activity extends AppCompatActivity {
                 break;
             //회원가입
             case R.id.btn_login_join:
-                Intent intent = new Intent(this, JoinActivity.class);
+                Intent intent = new Intent(this, SignUpActivity.class);
                 startActivity(intent);
                 break;
             case R.id.btn_login_id_find:
@@ -79,13 +75,13 @@ public class Login2Activity extends AppCompatActivity {
         boolean valid = true;
 
         if (TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
-            Toast.makeText(Login2Activity.this, "아이디를 입력해주세요.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignInActivity.this, "아이디를 입력해주세요.", Toast.LENGTH_SHORT).show();
             valid = false;
         } else if (TextUtils.isEmpty(password) && !TextUtils.isEmpty(email)) {
-            Toast.makeText(Login2Activity.this, "비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignInActivity.this, "비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show();
             valid = false;
         } else if (TextUtils.isEmpty(email) && TextUtils.isEmpty(password)) {
-            Toast.makeText(Login2Activity.this, "아이디와 비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignInActivity.this, "아이디와 비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show();
             valid = false;
         }
         return valid;
@@ -93,15 +89,15 @@ public class Login2Activity extends AppCompatActivity {
 
     private void signIn(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(Login2Activity.this, new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(SignInActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (!task.isSuccessful())
-                            Toast.makeText(Login2Activity.this, "아이디 또는 비밀번호가 틀렸습니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignInActivity.this, "아이디 또는 비밀번호가 틀렸습니다.", Toast.LENGTH_SHORT).show();
                         else {
-                            Toast.makeText(Login2Activity.this, "로그인 되었습니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignInActivity.this, "로그인 되었습니다.", Toast.LENGTH_SHORT).show();
                             onAuthSuccess(mAuth.getCurrentUser());
-                            Intent intent = new Intent(Login2Activity.this, MainActivity.class);
+                            Intent intent = new Intent(SignInActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
                         }
@@ -116,7 +112,7 @@ public class Login2Activity extends AppCompatActivity {
         writeNewUser(user.getUid(), username, user.getEmail());
 
         // Go to MainActivity
-        startActivity(new Intent(Login2Activity.this, MainActivity.class));
+        startActivity(new Intent(SignInActivity.this, MainActivity.class));
         finish();
     }
 

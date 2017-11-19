@@ -28,7 +28,7 @@ public class LoadingActivity extends Activity {
         setContentView(R.layout.activity_loading);
         Log.d(TAG, "onCreate");
 
-        intent2 = new Intent(LoadingActivity.this, Login2Activity.class);
+        intent2 = new Intent(LoadingActivity.this, SignInActivity.class);
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -43,7 +43,7 @@ public class LoadingActivity extends Activity {
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
-                    intent2 = new Intent(LoadingActivity.this, Login2Activity.class);
+                    intent2 = new Intent(LoadingActivity.this, SignInActivity.class);
                 }
                 // ...
             }

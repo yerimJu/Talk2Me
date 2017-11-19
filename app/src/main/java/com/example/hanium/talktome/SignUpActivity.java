@@ -18,10 +18,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 /**
- * Created by SAMSUNG on 2017-07-30.
+ * Created by Jisu on 2017-11-19.
  */
 
-public class JoinActivity extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity {
     String TAG = "JoinActivity";
     EditText et_join_id, et_join_pw, et_join_name, et_join_email;
     CheckBox cb_join_clause, cb_join_personal;
@@ -75,7 +75,7 @@ public class JoinActivity extends AppCompatActivity {
         boolean valid = true;
 
         if (TextUtils.isEmpty(id) || TextUtils.isEmpty(password) || TextUtils.isEmpty(name) || TextUtils.isEmpty(email)) {
-            Toast.makeText(JoinActivity.this, "양식을 다 입력해주세요.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignUpActivity.this, "양식을 다 입력해주세요.", Toast.LENGTH_SHORT).show();
             valid = false;
         } else {
             if(!TextUtils.isEmpty(id)){
@@ -83,7 +83,7 @@ public class JoinActivity extends AppCompatActivity {
                 final String regex = "\\p{Alnum}+@\\p{Alnum}+\\.\\p{Alnum}+";
                 boolean isEmail = email.matches(regex);
                 if(!isEmail){
-                    Toast.makeText(JoinActivity.this, "아이디를 이메일 형식으로 입력해주세요.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignUpActivity.this, "아이디를 이메일 형식으로 입력해주세요.", Toast.LENGTH_SHORT).show();
                     valid = false;
                 }
             }
@@ -101,17 +101,17 @@ public class JoinActivity extends AppCompatActivity {
                     isPass = true;
 
                 if(password.length() < 6){
-                    Toast.makeText(JoinActivity.this, "비밀번호를 6자리 이상 입력해주세요.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignUpActivity.this, "비밀번호를 6자리 이상 입력해주세요.", Toast.LENGTH_SHORT).show();
                     valid = false;
                 }
                 else if(!isPass){
-                    Toast.makeText(JoinActivity.this, "비밀번호를 영어 + 숫자의 조합으로 입력해주세요.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignUpActivity.this, "비밀번호를 영어 + 숫자의 조합으로 입력해주세요.", Toast.LENGTH_SHORT).show();
                     valid = false;
                 }
             }
 
             if(!cb_join_clause.isChecked() || !cb_join_personal.isChecked()){
-                Toast.makeText(JoinActivity.this, "이용약관과 개인정보 취급방침을 모두 동의해주세요.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignUpActivity.this, "이용약관과 개인정보 취급방침을 모두 동의해주세요.", Toast.LENGTH_SHORT).show();
                 valid = false;
             }
         }
@@ -126,19 +126,19 @@ public class JoinActivity extends AppCompatActivity {
 
         // [START create_user_with_email]
         mAuth.createUserWithEmailAndPassword(id, password)
-                .addOnCompleteListener(JoinActivity.this, new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
-                            Toast.makeText(JoinActivity.this, "회원가입 되었습니다.", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(JoinActivity.this, Login2Activity.class));
+                            Toast.makeText(SignUpActivity.this, "회원가입 되었습니다.", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
                             finish();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(JoinActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignUpActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -151,7 +151,7 @@ public class JoinActivity extends AppCompatActivity {
         //writeNewUser(user.getUid(), username, user.getEmail());
 
         // Go to MainActivity
-        startActivity(new Intent(JoinActivity.this, MainActivity.class));
+        startActivity(new Intent(SignUpActivity.this, MainActivity.class));
         finish();
     }
 }

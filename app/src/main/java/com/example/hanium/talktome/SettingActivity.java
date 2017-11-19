@@ -99,7 +99,7 @@ public class SettingActivity extends AppCompatActivity {
                             // 확인 버튼 클릭시 설정
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 Toast.makeText(getApplicationContext(), "회원 탈퇴 되었습니다.", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(SettingActivity.this, Login2Activity.class);
+                                Intent intent = new Intent(SettingActivity.this, SignInActivity.class);
                                 startActivity(intent);
                                 finish();
                             }
@@ -141,7 +141,7 @@ public class SettingActivity extends AppCompatActivity {
 //                startActivity(personRuleIntent);
                 break;
             case R.id.btn_snsconect:
-                Intent intent = new Intent(SettingActivity.this, LoginActivity.class);
+                Intent intent = new Intent(SettingActivity.this, SNSLoginActivity.class);
                 startActivity(intent);
                 break;
 

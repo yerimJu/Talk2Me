@@ -27,14 +27,16 @@ import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
+
 import org.json.JSONObject;
+
 import io.fabric.sdk.android.Fabric;
 
 /**
- * Created by Jisu on 2017-07-29.
+ * Created by Jisu on 2017-11-19.
  */
 
-public class LoginActivity extends Activity {
+public class SNSLoginActivity extends Activity {
     // for firebase database
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
@@ -77,7 +79,7 @@ public class LoginActivity extends Activity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 String fbtoken = loginResult.getAccessToken().getToken();
-                Toast.makeText(LoginActivity.this,"로그인 성공 " + fbtoken, Toast.LENGTH_SHORT).show();
+                Toast.makeText(SNSLoginActivity.this,"로그인 성공 " + fbtoken, Toast.LENGTH_SHORT).show();
 
                 Log.d(TAG, "토큰 : "+fbtoken);
                 Log.d(TAG, "유저아이디"+loginResult.getAccessToken().getUserId());
@@ -125,7 +127,7 @@ public class LoginActivity extends Activity {
 //                // with your app's user model
 //                String msg = "@" + session.getUserName() + " logged in! (#" + session.getUserId() + ")";
 //                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-                Toast.makeText(LoginActivity.this, "Authentication Success", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SNSLoginActivity.this, "Authentication Success", Toast.LENGTH_SHORT).show();
 
                 TwitterSession session = Twitter.getSessionManager().getActiveSession();
                 TwitterAuthToken authToken = session.getAuthToken();
