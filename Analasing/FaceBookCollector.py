@@ -11,13 +11,22 @@ import LogWriter
 import facebook
 from collections import OrderedDict
 
-facebook_app_id = '1415774871877416'
-facebook_app_secret = 'f6e4f025aff488eee5c8437e5788b97c'
-
 
 class FaceBookCollector(BaseCollector.BaseCollector):
+    facebook_app_id = '1415774871877416'
+    facebook_app_secret = 'f6e4f025aff488eee5c8437e5788b97c'
+
+    # User Access Token:
+
     def __init__(self):
         self.file = LogWriter.LogWriter('log.txt')
+
+        graph = facebook.GraphAPI('EAAUHo8ZAR9ygBAEnhqw8Mrl6hxu9hZAJYzrJdRTzukGePGxxGntV7lXbfwmQeGKXWyg3ZAfkUXjD2FFILtS7TP3ZAVChnxFlCjobsx1yUjAqaTHXDwIivT0UOL66mBMHynEVfdHN6tqpWNZCyTNtESwku99SL5vewOU2VDxUSkRkYxTF0jtMylKTLSWqvwPDEAiB0VYPjBtGhxIbam5fNy9OI7Jzm0LCXnwZBZBuCZA7gQZDZD')
+        resp = graph.get_object('me/friends')
+
+        for page in resp['data']:
+            print(page)
+
         pass
         # graph = facebook.GraphAPI(access_token="1415774871877416|jzA-PuQwDbOG2m1vPgUYlPJtpn8", version="2.10")
         #
@@ -40,8 +49,10 @@ class FaceBookCollector(BaseCollector.BaseCollector):
 def main():
     facebook_coll = FaceBookCollector()
 
+    return
+
     page_name = 'jtbcnews'
-    access_token = facebook_app_id + "|" + facebook_app_secret
+    access_token = FaceBookCollector.facebook_app_id + "|" + FaceBookCollector.facebook_app_secret
 
     from_date = '2017-09-21'
     to_date = '2017-09-21'
