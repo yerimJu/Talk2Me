@@ -43,7 +43,8 @@
             android:layout_height="wrap_content"
             android:text="확인"
             android:textColor="#FFFFFF"
-            android:onClick="btn_time_yes"/>
+            android:onClick="btn_time_yes"
+            android:id="@+id/btn_time_yes"/>
 
         <Button
             android:layout_width="wrap_content"

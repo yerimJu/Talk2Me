@@ -12,6 +12,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.PopupWindow;
@@ -62,9 +63,11 @@ public class SettingActivity extends AppCompatActivity {
     private EditText edit_keyword;
     private DatePicker datepick;
     private TimePicker timepick;
+    private Button btn_time_yes;
 
     private String Str_keyword; //edit text에서 키워드를 받아옴
-    private String Str_year, Str_month, Str_day, Str_hour, Str_minute; //방해금지모드, 시간여행 picker에서 날짜, 시간을 받아옴
+    private String Str_year1, Str_month1, Str_day1, Str_year2, Str_month2, Str_day2; //시간여행
+    private String Str_hour, Str_minute; //방해금지모드 picker에서 날짜, 시간을 받아옴
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,6 +163,8 @@ public class SettingActivity extends AppCompatActivity {
             case R.id.btn_time:
                 //시간여행 설정
                 layout = inflater.inflate(R.layout.time_popup, (ViewGroup) findViewById(R.id.popup_time));
+                btn_time_yes = (Button) layout.findViewById(R.id.btn_time_yes);
+                btn_time_yes.setText("다음");
                 MakePopup(layout, 3);
                 break;
 
@@ -244,66 +249,82 @@ public class SettingActivity extends AppCompatActivity {
 
     //3. 시간여행 설정
     public void btn_time_yes(View v) {
-        Str_year = String.valueOf(datepick.getYear());
-        Str_month = String.valueOf(datepick.getMonth() + 1);
-        Str_day = String.valueOf(datepick.getDayOfMonth());
+        if(btn_time_yes.getText().equals("다음")){
+            Str_year1 = String.valueOf(datepick.getYear());
+            Str_month1 = String.valueOf(datepick.getMonth() + 1);
+            Str_day1 = String.valueOf(datepick.getDayOfMonth());
 
-        Toast.makeText(getApplicationContext(), "시간 여행 할 날짜가 " + Str_year + "년 " + Str_month + "월 " + Str_day + "일" + "로 설정되었습니다.", Toast.LENGTH_SHORT).show();
-        // 이전 알림 조회 시간 디비에 저장
-        // -> 저장 할 필요 없을 것 같음. 불러오기 기능이므로
-        //    날짜 설정은 당일이 아닌 n일 이었던 것 같은데 이에 대한 입력 form 수정 필요
+            btn_time_yes.setText("확인");
+            pwindo.dismiss();
+            LayoutInflater inflater = (LayoutInflater) SettingActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View layout = inflater.inflate(R.layout.time_popup, (ViewGroup) findViewById(R.id.popup_time));
+            MakePopup(layout, 3);
+        }
+        else {
+            Str_year2 = String.valueOf(datepick.getYear());
+            Str_month2 = String.valueOf(datepick.getMonth() + 1);
+            Str_day2 = String.valueOf(datepick.getDayOfMonth());
 
-        // 설정된 시간의 알림 가져오기
-        // -> 일단 해당 날짜로 조회하는 기능으로 구현하였음
-        Query loadNotificationByTimeQuery = mNotificationReference.child(mUser.getUid());
-        loadNotificationByTimeQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            Toast.makeText(getApplicationContext(), "시간 여행 날짜가 " + Str_year1 + "년 " + Str_month1 + "월 " + Str_day1 + "일 부터\n"+ Str_year2 + "년 " + Str_month2 + "월 " + Str_day2 + "일" + "까지로 설정되었습니다.", Toast.LENGTH_SHORT).show();
+            // 이전 알림 조회 시간 디비에 저장
+            // -> 저장 할 필요 없을 것 같음. 불러오기 기능이므로
+            //    날짜 설정은 당일이 아닌 n일 이었던 것 같은데 이에 대한 입력 form 수정 필요
 
-                List<String> notificationList = new ArrayList<>();
-                Log.d(TAG, "입력 format : " + Str_year + "년 " + Str_month + "월 " + Str_day + "일");
+            // 설정된 시간의 알림 가져오기
+            // -> 일단 해당 날짜로 조회하는 기능으로 구현하였음
+            Query loadNotificationByTimeQuery = mNotificationReference.child(mUser.getUid());
+            loadNotificationByTimeQuery.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    long now = System.currentTimeMillis();
+                    Date date = new Date(now);
+                    List<String> notificationList = new ArrayList<>();
+                    Log.d(TAG, "입력 format : " + Str_year1 + "년 " + Str_month1 + "월 " + Str_day1 + "일");
 
-                for (DataSnapshot notificationSnapshot : dataSnapshot.getChildren()) {
-                    // TODO: handle the post
-                    Notification notification = notificationSnapshot.getValue(Notification.class);
+                    for (DataSnapshot notificationSnapshot : dataSnapshot.getChildren()) {
+                        // TODO: handle the post
+                        Notification notification = notificationSnapshot.getValue(Notification.class);
 
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                    try {
-                        Date date = simpleDateFormat.parse(notification.getDate());
-                        int year = date.getYear() < 1900 ? date.getYear()+1900 : date.getYear();
-                        int month = date.getMonth()+1;
-                        int day = date.getDay()+12; //??
-                        Log.d(TAG, "검사 중 ... " + year+"년 "+month+"월 "+day+"일");
-                        if (Str_year.equals(String.valueOf(year)) && Str_month.equals(String.valueOf(month)) && Str_day.equals(String.valueOf(day))) {
-                            notificationList.add(notification.getNid());
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                        try {
+                            date = simpleDateFormat.parse(notification.getDate());
+                            SimpleDateFormat dateFormat = new  SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
+                            String strDate = dateFormat.format(date);
+
+                            String temp1 = Str_year1+"-"+Str_month1+"-"+Str_day1+" 00:00";
+                            Date day1 = dateFormat.parse(temp1);
+
+                            String temp2 = Str_year2+"-"+Str_month2+"-"+Str_day2+" 23:59";
+                            Date day2 = dateFormat.parse(temp2);
+
+                            if(date.after(day1) && day2.after(date)){
+                                notificationList.add(notification.getNid());
+
+                                Toast.makeText(getApplicationContext(), strDate + "일의 알림 id : " + notificationList.toString(), Toast.LENGTH_SHORT).show();
+                            }
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                            Log.d(TAG, "date format으로 변환할 수 없습니다.");
                         }
+                    }
 
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                        Log.d(TAG, "date format으로 변환할 수 없습니다.");
+                    if (notificationList.isEmpty()) {
+                        Toast.makeText(getApplicationContext(), Str_year1 + "년 " + Str_month1 + "월 " + Str_day1 +"일에서\n" + Str_year2 + "년 " + Str_month2 + "월 " + Str_day2 + "일 사이에 알림이 없습니다.", Toast.LENGTH_SHORT).show();
                     }
                 }
 
-                if (notificationList.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), Str_year + "년 " + Str_month + "월 " + Str_day + "일에 알림이 없습니다.", Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.d(TAG, notificationList.toString());
-                    Toast.makeText(getApplicationContext(), Str_year + "년 " + Str_month + "월 " + Str_day + "일의 알림 id : " +
-                            notificationList.toString(), Toast.LENGTH_SHORT).show();
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    // Getting Post failed, log a message
+                    Log.w(TAG, "loadUser:onCancelled", databaseError.toException());
+                    // ...
+                    Toast.makeText(getApplicationContext(), "현재 키워드 불러오기 기능이 작동되지 않습니다.", Toast.LENGTH_SHORT).show();
                 }
+            });
 
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Getting Post failed, log a message
-                Log.w(TAG, "loadUser:onCancelled", databaseError.toException());
-                // ...
-                Toast.makeText(getApplicationContext(), "현재 키워드 불러오기 기능이 작동되지 않습니다.", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        pwindo.dismiss();
+            pwindo.dismiss();
+        }
 
     }
 

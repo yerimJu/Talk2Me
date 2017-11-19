@@ -172,18 +172,9 @@ public class MainActivity extends AppCompatActivity {
 
                 // 푸시알람이 오게 해야함
                 try {
-
-                    // 알림 받은 항목에 대해서는 알림을 보내지 않아야 함 - 추가로 기술 필요
                     // 방해 금지 날짜 받아오는 부분 추가 기술 필요
-                    if(!isProhibit("2017-12-18 13:30"))
+                    if(!isProhibit("2017-12-18 13:30") && noti.getIsRead().equals("false"))
                         set_notification(noti.title, noti.content);
-
-                    System.out.println("하이2 들어옴");
-                    // 이전 알림 조회 날짜와 현재 날짜가 같다면 이전알림조회 탭에 추가
-                    // 이전 알림 조회 날짜 받아오는 부분 추가 기술 필요
-                    if(isPrevious(noti.date, "2017-11-14"))
-                        PreviousAlarms.add(new ChildListData(null, noti.getContents()));
-
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -246,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
         parentList.add("    확인 할 알림 (" + alarmsToCheck.size() + ")");
         parentList.add("    추천 뉴스피드 (" + recommandedNews.size() + ")");
         parentList.add("    테스트 전용 탭1 (" + alarmsNotCheck.size() + ")");
-        parentList.add("    테스트 전용 탭2 (" + testArray.size() + ")");
+        parentList.add("    테스트 전용 탭2 (" + testArray.size()+ ")");
         parentList.add("    이전 알림 조회 ("+PreviousAlarms.size()+")");
 
         // parent와 child를 hashmap으로 연결
