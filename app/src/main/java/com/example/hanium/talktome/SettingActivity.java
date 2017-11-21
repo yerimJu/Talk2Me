@@ -61,13 +61,13 @@ public class SettingActivity extends AppCompatActivity {
 
     private PopupWindow pwindo;
     private EditText edit_keyword;
-    private DatePicker datepick;
+    private DatePicker datepick, datepick2;
     private TimePicker timepick;
     private Button btn_time_yes;
 
     private String Str_keyword; //edit text에서 키워드를 받아옴
     private String Str_year1, Str_month1, Str_day1, Str_year2, Str_month2, Str_day2; //시간여행
-    private String Str_hour, Str_minute; //방해금지모드 picker에서 날짜, 시간을 받아옴
+    private String Str_year3, Str_month3, Str_day3, Str_hour, Str_minute; //방해금지모드 picker에서 날짜, 시간을 받아옴
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,8 +170,8 @@ public class SettingActivity extends AppCompatActivity {
 
             case R.id.btn_noring:
                 //방해금지 모드 설정
-                layout = inflater.inflate(R.layout.noring_popup, (ViewGroup) findViewById(R.id.popup_noring));
-                MakePopup(layout, 4);
+                layout = inflater.inflate(R.layout.noring_popup1, (ViewGroup) findViewById(R.id.popup_noring1));
+                MakePopup(layout, 41);
                 break;
             default:
                 break;
@@ -179,15 +179,17 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     public void MakePopup(View layout, int id) {
-        if (id == 3) pwindo = new PopupWindow(layout, 1000, 1600, true);
-        else if (id == 4) pwindo = new PopupWindow(layout, 1000, 1400, true);
+        if (id == 3 || id == 41) pwindo = new PopupWindow(layout, 1000, 1600, true);
+        else if (id == 42) pwindo = new PopupWindow(layout, 1000, 1400, true);
         else pwindo = new PopupWindow(layout, 1000, 800, true);
         pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
 
         if (id == 1) edit_keyword = (EditText) layout.findViewById(R.id.edit_keyword);
         else if (id == 3)
             datepick = (DatePicker) layout.findViewById(R.id.datepick);
-        else if (id == 4)
+        else if(id == 41)
+            datepick2 = (DatePicker) layout.findViewById(R.id.datepick2);
+        else if (id == 42)
             timepick = (TimePicker) layout.findViewById(R.id.timepick);
 
     }
@@ -329,11 +331,21 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     //4. 방해금지 모드 설정
+    public void btn_noring_next(View v) {
+        Str_year3 = String.valueOf(datepick2.getYear());
+        Str_month3 = String.valueOf(datepick2.getMonth() + 1);
+        Str_day3 = String.valueOf(datepick2.getDayOfMonth());
+
+        pwindo.dismiss();
+        LayoutInflater inflater = (LayoutInflater) SettingActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.noring_popup2, (ViewGroup) findViewById(R.id.popup_noring2));
+        MakePopup(layout, 42);
+    }
     public void btn_noring_yes(View v) {
         Str_hour = String.valueOf(timepick.getCurrentHour());
         Str_minute = String.valueOf(timepick.getCurrentMinute());
 
-        Toast.makeText(getApplicationContext(), "방해금지 시간이 현재부터 " + Str_hour + ":" + Str_minute + " 까지로 설정되었습니다.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "방해금지 시간이 현재부터 "  + Str_year3 + "년 " + Str_month3 + "월 " + Str_day3 + "일\n"+ Str_hour + "시 " + Str_minute + "분 까지로 설정되었습니다.", Toast.LENGTH_SHORT).show();
         // 방해 금지 시간 디비에 저장
 
         // 설정된 시간의 알림 막기

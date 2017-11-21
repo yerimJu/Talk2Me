@@ -312,6 +312,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
+                } else if(groupPosition == 3){
+                    // noti.setIsRead("true"); 해야하는데 noti를 어떻게 불러오는지 모르겠음..
                 }
 
                 return false;

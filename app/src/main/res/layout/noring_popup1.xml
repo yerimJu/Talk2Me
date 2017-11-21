@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/rouned"
     android:padding="5sp"
-    android:id="@+id/popup_noring"
+    android:id="@+id/popup_noring1"
     android:orientation="vertical">
 
     <TextView
@@ -18,11 +18,11 @@
         android:textColor="#4D4D4D"
         android:textStyle="bold"/>
 
-    <TimePicker
+    <DatePicker
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:id="@+id/timepick"/>
+        android:id="@+id/datepick2"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -42,9 +42,9 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="확인"
+            android:text="다음"
             android:textColor="#FFFFFF"
-            android:onClick="btn_noring_yes"/>
+            android:onClick="btn_noring_next"/>
 
         <Button
             android:layout_width="wrap_content"
