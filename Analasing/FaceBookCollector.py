@@ -21,7 +21,7 @@ class FaceBookCollector(BaseCollector.BaseCollector):
     def __init__(self):
         self.file = LogWriter.LogWriter('log.txt')
 
-        graph = facebook.GraphAPI('EAAUHo8ZAR9ygBAEnhqw8Mrl6hxu9hZAJYzrJdRTzukGePGxxGntV7lXbfwmQeGKXWyg3ZAfkUXjD2FFILtS7TP3ZAVChnxFlCjobsx1yUjAqaTHXDwIivT0UOL66mBMHynEVfdHN6tqpWNZCyTNtESwku99SL5vewOU2VDxUSkRkYxTF0jtMylKTLSWqvwPDEAiB0VYPjBtGhxIbam5fNy9OI7Jzm0LCXnwZBZBuCZA7gQZDZD')
+        graph = facebook.GraphAPI('1415774871877416|jzA-PuQwDbOG2m1vPgUYlPJtpn8')
         resp = graph.get_object('me/friends')
 
         for page in resp['data']:

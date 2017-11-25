@@ -3,12 +3,12 @@ import BaseCollector
 
 
 class RSSCollector(BaseCollector.BaseCollector):
-    def __init__(self, url):
+    def __init__(self):
         super(RSSCollector, self).__init__()
-        self.url = url
 
-    def print_test(self):
-        feed = feedparser.parse(self.url)
+    @staticmethod
+    def print_test(url):
+        feed = feedparser.parse(url)
 
         for key in feed['entries']:
             title = key['title']
@@ -26,5 +26,5 @@ class RSSCollector(BaseCollector.BaseCollector):
 
 
 if __name__ == '__main__':
-    rc = RSSCollector('http://blog.rss.naver.com/uutak2000.xml')
-    rc.print_test()
+    rc = RSSCollector()
+    rc.print_test('http://blog.rss.naver.com/uutak2000.xml')
