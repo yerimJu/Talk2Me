@@ -12,7 +12,7 @@
                 <!-- 아이디 -->
                 <LinearLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="33dp"
+                    android:layout_height="27.5dp"
                     android:layout_marginTop="16dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal" >
@@ -38,16 +38,6 @@
                         android:textSize="15dp"
                         android:background="@drawable/white_rouned"/>
 
-                    <Button
-                        android:id="@+id/btn_join_id_check"
-                        android:layout_width="88dp"
-                        android:layout_height="wrap_content"
-                        android:text="중복확인"
-                        android:background="@drawable/small_gray_rouned"
-                        android:textColor="#ffffff"
-                        android:textSize="15dp"
-                        android:onClick="mOnClick"/>
-
                 </LinearLayout>
 
                 <!-- 영문대소문자... Hint -->
@@ -56,7 +46,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:gravity="center_vertical"
-                    android:text="영문대소문자 + 숫자로 입력해 주세요."
+                    android:text="사용하는 이메일로 입력해 주세요."
                     android:textColor="#A6A6A6"
                     android:textSize="15dp"/>
 
@@ -150,7 +140,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:gravity="center_vertical"
-                    android:text="아아디/비밀번호 찾기에 필요한 실명을 입력해 주세요."
+                    android:text="아아디/비밀번호 찾기에 필요한 실명을 입력해주세요."
                     android:textColor="#A6A6A6"
                     android:textSize="15dp"/>
 
@@ -161,7 +151,7 @@
                     android:layout_marginBottom="15dp"
                     android:background="#A6A6A6"/>
 
-                <!-- 이메일 -->
+                <!-- 생년월일 -->
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="27.5dp"
@@ -173,17 +163,16 @@
                         android:layout_height="wrap_content"
                         android:textColor="#7b828b"
                         android:textSize="15dp"
-                        android:text="이메일" />
+                        android:text="생년월일" />
 
                     <EditText
-                        android:id="@+id/et_join_email"
+                        android:id="@+id/et_join_birth"
                         android:layout_width="0dp"
                         android:layout_height="fill_parent"
                         android:layout_weight="0.1"
                         android:paddingLeft="5dp"
                         android:gravity="center_vertical"
                         android:imeOptions="actionDone"
-                        android:inputType="textEmailAddress"
                         android:singleLine="true"
                         android:textColor="#373737"
                         android:textSize="15dp"
@@ -191,13 +180,13 @@
 
                 </LinearLayout>
 
-                <!-- 아이디/비밀번호 찾기에... Hint -->
+                <!--아이디/비밀번호 찾기에... Hint -->
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:gravity="center_vertical"
-                    android:text="아아디/비밀번호 찾기에 필요한 실제 사용하는 이메을 주소를 입력해 주세요."
+                    android:text="YYYY-MM-DD 형식으로 입력해주세요."
                     android:textColor="#A6A6A6"
                     android:textSize="15dp"/>
 
@@ -206,7 +195,7 @@
                     android:layout_height="1dp"
                     android:layout_marginTop="15dp"
                     android:layout_marginBottom="15dp"
-                    android:background="#A6A6A6"/>
+                    android:background="#A6A6A6" />
 
                 <!-- 이용약관 동의 -->
                 <LinearLayout

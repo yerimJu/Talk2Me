@@ -95,11 +95,17 @@ public class SignInActivity extends AppCompatActivity {
                         if (!task.isSuccessful())
                             Toast.makeText(SignInActivity.this, "아이디 또는 비밀번호가 틀렸습니다.", Toast.LENGTH_SHORT).show();
                         else {
-                            Toast.makeText(SignInActivity.this, "로그인 되었습니다.", Toast.LENGTH_SHORT).show();
-                            onAuthSuccess(mAuth.getCurrentUser());
-                            Intent intent = new Intent(SignInActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
+                            if(mAuth.getCurrentUser().isEmailVerified()){
+                                //검증 이메일을 확인한 경우에만 로그인이 됨
+                                Toast.makeText(SignInActivity.this, "로그인 되었습니다.", Toast.LENGTH_SHORT).show();
+                                onAuthSuccess(mAuth.getCurrentUser());
+                                Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                            else{
+                                Toast.makeText(SignInActivity.this, "검증 이메일을 확인해주세요.", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 });
