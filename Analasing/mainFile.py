@@ -1,7 +1,4 @@
-import FaceBookCollector
-import TwitterCollector
-import RSSCollector
-from FirebaseConnector import FirebaseConnector
+from Database.FirebaseConnector import FirebaseConnector
 
 if __name__ == '__main__':
     f = FirebaseConnector()

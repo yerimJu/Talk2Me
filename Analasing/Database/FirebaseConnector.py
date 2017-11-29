@@ -11,18 +11,30 @@ class FirebaseConnector:
                                                 'databaseURL': 'https://talk2me-58045.firebaseio.com/'
                                             })
 
-        ref = db.reference('/users')
-        users_dict = ref.get()
-
-        ref = db.reference('/notifications')
-        notification_dict = ref.get()
+        users_dict = FirebaseConnector.get_user()
 
         for user in users_dict:
             print('user token : ', user)
             # print(users_dict[user])
+
             try:
                 print('facebook Access Token : ', users_dict[user]['facebookAccesstoken'])
             except KeyError:
-                print("this User dosen't have FaceBook Access Token")
+                print("this User doesn't have FaceBook Access Token")
+
+            try:
+                print('setting : ', FirebaseConnector.get_setting(user))
+            except KeyError:
+                # TODO: 이 경우에 디폴트 설정으로 설정해주기
+                pass
+
             print('email : ', users_dict[user]['email'])
             print('username : ', users_dict[user]['username'], end='\n\n')
+
+    @staticmethod
+    def get_setting(token):
+        return db.reference('/settings').get()[token]
+
+    @staticmethod
+    def get_user():
+        return db.reference('/users').get()
