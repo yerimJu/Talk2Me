@@ -2,12 +2,8 @@ package com.example.hanium.talktome;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TabActivity;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
@@ -15,9 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ExpandableListView;
-import android.widget.TabHost;
 import android.widget.Toast;
 
 import com.example.hanium.talktome.models.Notification;
@@ -35,9 +29,9 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -59,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<ChildListData> alarmsToCheck;
     private ArrayList<ChildListData> recommandedNews;
     private ArrayList<ChildListData> alarmsNotCheck;
-    private ArrayList<ChildListData> testArray;
-    private ArrayList<ChildListData> PreviousAlarms;
+    private ArrayList<ChildListData> unReadNotifications;
+    private ArrayList<ChildListData> ReadNotifications;
     private HashMap<String, ArrayList<ChildListData>> childList; // parent-child 연결할 hashmap 변수
 
 
@@ -157,8 +151,11 @@ public class MainActivity extends AppCompatActivity {
         mNotificationReference = mDatabase.child("notifications").child(userId);
 
         // DB 정보가 담긴 array
-        testArray = new ArrayList<ChildListData>();
-        PreviousAlarms = new ArrayList<ChildListData>();
+        unReadNotifications = new ArrayList<ChildListData>();
+        ReadNotifications = new ArrayList<ChildListData>();
+
+        // notification array
+        final List<Notification> notificationList = new ArrayList<Notification>();
 
         // 실시간 DB를 위한 child event listener
         ChildEventListener notificationListener = new ChildEventListener() {
@@ -167,8 +164,17 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
 
                 Notification noti = dataSnapshot.getValue(Notification.class);
-                Log.d(TAG, "I got a new notification :)\n" + noti.toString());
-                testArray.add(new ChildListData(null, noti.getContents()));
+                Log.d(TAG, "I got a new notification :)\n" + noti.getContents());
+
+                if ("false".equals(noti.isRead)) {
+                    // 읽지 않은 알림함에 추가
+                    unReadNotifications.add(new ChildListData(null, noti.getContents()));
+                    notificationList.add(noti);
+                } else if ("true".equals(noti.isRead)){
+                    // 읽은 알림함에 추가
+                    ReadNotifications.add(new ChildListData(null, noti.getContents()));
+                }
+
 
                 // 푸시알람이 오게 해야함
                 try {
@@ -237,16 +243,16 @@ public class MainActivity extends AppCompatActivity {
         parentList.add("    확인 할 알림 (" + alarmsToCheck.size() + ")");
         parentList.add("    추천 뉴스피드 (" + recommandedNews.size() + ")");
         parentList.add("    테스트 전용 탭1 (" + alarmsNotCheck.size() + ")");
-        parentList.add("    테스트 전용 탭2 (" + testArray.size()+ ")");
-        parentList.add("    이전 알림 조회 ("+PreviousAlarms.size()+")");
+        parentList.add("    읽지 않은 알림함 (" + unReadNotifications.size()+ ")");
+        parentList.add("    읽은 알림함 ("+ ReadNotifications.size()+")");
 
         // parent와 child를 hashmap으로 연결
         childList = new HashMap<String, ArrayList<ChildListData>>();
         childList.put(parentList.get(0), alarmsToCheck);
         childList.put(parentList.get(1), recommandedNews);
         childList.put(parentList.get(2), alarmsNotCheck);
-        childList.put(parentList.get(3), testArray);
-        childList.put(parentList.get(4), PreviousAlarms);
+        childList.put(parentList.get(3), unReadNotifications);
+        childList.put(parentList.get(4), ReadNotifications);
 
         // expandablelistview, customadapter 연결 후 OnClickListener 선언
         expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
@@ -313,7 +319,17 @@ public class MainActivity extends AppCompatActivity {
                     });
 
                 } else if(groupPosition == 3){
-                    // noti.setIsRead("true"); 해야하는데 noti를 어떻게 불러오는지 모르겠음..
+
+                    // 클릭하여 읽은 상태로 변환하는 것은 구현하였으나 database와 android chidListData array의 실시간 연동은 되지 않음
+                    // (앱을 껐다가 켜야 옮겨짐)
+
+                    Notification clickedNoti = notificationList.get(childPosition);
+                    mNotificationReference.child(clickedNoti.getNid()).child("isRead").setValue("true");
+
+                    Log.d(TAG, clickedNoti.nid + " false -> true");
+                    Toast.makeText(MainActivity.this, "you read " + clickedNoti.getDate(),
+                            Toast.LENGTH_SHORT).show();
+
                 }
 
                 return false;

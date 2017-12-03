@@ -140,6 +140,6 @@ public class Notification {
     }
 
     public String getContents() {
-        return date + "\n" + title + "\n" + content + "\n" + url;
+        return date + "\n" + isRead + "\n" + title + "\n" + content + "\n" + url;
     }
 }
