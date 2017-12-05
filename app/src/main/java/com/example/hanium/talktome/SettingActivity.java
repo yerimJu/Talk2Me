@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -22,6 +23,8 @@ import android.widget.Toast;
 import com.example.hanium.talktome.models.Notification;
 import com.example.hanium.talktome.models.Setting;
 import com.example.hanium.talktome.models.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -101,10 +104,16 @@ public class SettingActivity extends AppCompatActivity {
                         .setPositiveButton("네", new DialogInterface.OnClickListener() {
                             // 확인 버튼 클릭시 설정
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                Toast.makeText(getApplicationContext(), "회원 탈퇴 되었습니다.", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(SettingActivity.this, SignInActivity.class);
-                                startActivity(intent);
-                                finish();
+                                mUser.delete()
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                Toast.makeText(getApplicationContext(), "회원 탈퇴 되었습니다.", Toast.LENGTH_SHORT).show();
+                                                Intent intent = new Intent(SettingActivity.this, SignInActivity.class);
+                                                startActivity(intent);
+                                                finish();
+                                            }
+                                        });
                             }
                         })
                         .setNegativeButton("아니오", new DialogInterface.OnClickListener() {

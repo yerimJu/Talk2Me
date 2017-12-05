@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_setting:
                 Intent intent = new Intent(MainActivity.this, SettingActivity.class);
                 startActivity(intent);
+                finish();
                 return true;
             case R.id.action_logout:
                 FirebaseAuth.getInstance().signOut();
@@ -209,8 +210,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "postComments:onCancelled", databaseError.toException());
-                Toast.makeText(MainActivity.this, "Failed to load notifications.",
-                        Toast.LENGTH_SHORT).show();
             }
         };
         mNotificationReference.addChildEventListener(notificationListener);
